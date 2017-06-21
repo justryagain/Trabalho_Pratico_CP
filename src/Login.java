@@ -270,8 +270,29 @@ public class Login extends JFrame {
 		menu.setLayout(null);
 		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(10, 33, 464, 12);
+		separator_1.setBounds(17, 33, 458, 14);
 		menu.add(separator_1);
+		
+		JLabel lblAdministrador = new JLabel("Administrador");
+		lblAdministrador.setForeground(new Color(0, 0, 102));
+		lblAdministrador.setFont(new Font("Segoe UI Light", Font.PLAIN, 25));
+		lblAdministrador.setBackground(new Color(255, 153, 153));
+		lblAdministrador.setBounds(160, 8, 156, 20);
+		menu.add(lblAdministrador);
+		
+		JLabel label = new JLabel("Voltar");
+		label.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				login.setVisible(true);
+				menu.setVisible(false);
+			}
+		});
+		label.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\undo.png"));
+		label.setForeground(new Color(25, 25, 112));
+		label.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		label.setBounds(17, 8, 67, 20);
+		menu.add(label);
 		
 		
 		menu2 = new JPanel();
