@@ -39,6 +39,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 
@@ -62,8 +64,9 @@ public class Login extends JFrame {
 	private JComboBox comboBox2;
 	private JTextField Txt;
 	private JTable table3;
-	private JComboBox comboBox4;
 	private JComboBox comboBox3;
+	private JTable table4;
+	private JTextField Txt2;
 
 
 	/**
@@ -95,7 +98,7 @@ public class Login extends JFrame {
 		setResizable(false);
 		setTitle("TP CP");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 515, 405);
+		setBounds(100, 100, 500, 405);
 		contentPane = new JPanel();
 		contentPane.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -113,6 +116,7 @@ public class Login extends JFrame {
 		username.setColumns(10);
 		
 		password = new JTextField();
+		password.setToolTipText("");
 		password.setForeground(new Color(0, 0, 204));
 		password.setBounds(173, 97, 112, 20);
 		login.add(password);
@@ -171,8 +175,8 @@ public class Login extends JFrame {
 				   ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
 				while(rs.next()){
 					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox1.getModel();
-					DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox4.getModel();
 				    cb.addElement(rs.getString("designacao"));
+				    
 				    
 				   }
 				
@@ -190,7 +194,9 @@ public class Login extends JFrame {
 				   ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
 				while(rs.next()){
 					DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox2.getModel();
+					DefaultComboBoxModel cb3 = (DefaultComboBoxModel) comboBox3.getModel();
 				    cb2.addElement(rs.getString("nome_equipa"));
+				    cb3.addElement(rs.getString("nome_equipa"));
 				    
 				   }
 				
@@ -237,7 +243,7 @@ public class Login extends JFrame {
 		});
 		
 		
-		btnVisitor.setBounds(173, 162, 112, 23);
+		btnVisitor.setBounds(173, 162, 112, 24);
 		login.add(btnVisitor);
 		
 		JLabel lblNewLabel = new JLabel("Palavra-passe");
@@ -284,6 +290,7 @@ public class Login extends JFrame {
 		menu2.add(tabbedPane);
 		
 		JPanel panel = new JPanel();
+		panel.setToolTipText("Escolha a \u00C9poca e clique em Procurar.");
 		panel.setBackground(new Color(255, 255, 255));
 		tabbedPane.addTab("\u00C9poca", null, panel, null);
 		panel.setLayout(null);
@@ -546,6 +553,7 @@ public class Login extends JFrame {
 		panel_1.add(lblEquipas);
 		
 		comboBox2 = new JComboBox();
+		comboBox2.setToolTipText("Escolha a Equipa e clique em Procurar.");
 		comboBox2.setBounds(10, 36, 105, 20);
 		panel_1.add(comboBox2);
 		
@@ -659,6 +667,7 @@ public class Login extends JFrame {
 		panel_2.add(lblJogadores);
 		
 		Txt = new JTextField();
+		Txt.setToolTipText("Insira o Nome ou a letra do jogador que deseja procurar.");
 		Txt.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent arg0) {
 				
@@ -705,11 +714,6 @@ public class Login extends JFrame {
 			    {
 			    }
 			    
-			    if(Txt.getText() == ""){
-					DefaultTableModel dm = (DefaultTableModel)table3.getModel();
-					dm.getDataVector().removeAllElements();
-					dm.fireTableDataChanged();
-			    }
 			}
 		});
 
@@ -755,7 +759,7 @@ public class Login extends JFrame {
 		checkBox3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-if(checkBox.isSelected()){
+					if(checkBox3.isSelected()){
 					
 					//Ligação à base de dados.
 					Connection conn = null;
@@ -787,7 +791,7 @@ if(checkBox.isSelected()){
 				            {  
 				                row[i - 1] = rs.getObject(i);
 				            }
-				            ((DefaultTableModel) table2.getModel()).insertRow(rs.getRow()-1,row);
+				            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
 				            
 				            
 				        }
@@ -831,22 +835,147 @@ if(checkBox.isSelected()){
 		panel_3.add(lblEquipa);
 		
 		comboBox3 = new JComboBox();
-		comboBox3.setBounds(10, 31, 83, 20);
+		comboBox3.setToolTipText("Escolha a Equipa para encontrar um jogo.");
+		comboBox3.setBounds(10, 31, 101, 20);
 		panel_3.add(comboBox3);
 		
-		JLabel lblData = new JLabel("\u00C9poca");
+		JLabel lblData = new JLabel("Data");
 		lblData.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblData.setBounds(123, 11, 83, 14);
 		panel_3.add(lblData);
 		
-		comboBox4 = new JComboBox();
-		comboBox4.setBounds(123, 31, 83, 20);
-		panel_3.add(comboBox4);
-		
 		JButton button_1 = new JButton("Procurar");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				DefaultTableModel dm = (DefaultTableModel)table4.getModel();
+				dm.getDataVector().removeAllElements();
+				dm.fireTableDataChanged();
+				
+				String x = (String) comboBox3.getSelectedItem();
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Carrega os dados dos jogos em relação à Época e as Equipas.
+			    try
+			    {
+					
+			        Statement stat = conn.createStatement();
+			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogo WHERE equipa_casa='"+x+"' OR equipa_visitante='"+x+"'");
+			        
+			        int colunas = rs.getMetaData().getColumnCount();
+			        while(rs.next())
+			        {  
+			            Object[] row = new Object[colunas];
+			            for (int i = 1; i <= colunas; i++)
+			            {  
+			                row[i - 1] = rs.getObject(i);
+			            }
+			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
+			            
+			            
+			        }
+
+			        rs.close();
+			        stat.close();
+			        conn.close();
+			    }
+			    catch (SQLException e)
+			    {
+			    }
+				
+				
+			}
+		});
 		button_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		button_1.setBounds(10, 71, 429, 31);
 		panel_3.add(button_1);
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(10, 113, 429, 150);
+		panel_3.add(scrollPane_3);
+		
+		table4 = new JTable();
+		table4.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"C\u00F3d", "Equipa da Casa", "Equipa Visitante", "Data", "Golos C.", "Golos V."
+			}
+		));
+		table4.getColumnModel().getColumn(0).setPreferredWidth(48);
+		table4.getColumnModel().getColumn(1).setPreferredWidth(160);
+		table4.getColumnModel().getColumn(2).setPreferredWidth(165);
+		table4.getColumnModel().getColumn(3).setPreferredWidth(114);
+		table4.getColumnModel().getColumn(4).setPreferredWidth(101);
+		table4.getColumnModel().getColumn(5).setPreferredWidth(102);
+		scrollPane_3.setViewportView(table4);
+		
+		Txt2 = new JTextField();
+		Txt2.setToolTipText("Escreva o dia, o m\u00EAs ou o ano do jogo.");
+		Txt2.addCaretListener(new CaretListener() {
+			public void caretUpdate(CaretEvent arg0) {
+				
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Carrega todos os dados para a Table3.
+			    try
+			    {
+					DefaultTableModel dm = (DefaultTableModel)table4.getModel();
+					dm.getDataVector().removeAllElements();
+					dm.fireTableDataChanged();
+					
+			        Statement stat = conn.createStatement();
+			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogo WHERE data LIKE '%"+Txt2.getText()+"%'");
+			        
+			        int colunas = rs.getMetaData().getColumnCount();
+			        while(rs.next())
+			        {  
+			            Object[] row = new Object[colunas];
+			            for (int i = 1; i <= colunas; i++)
+			            {  
+			                row[i - 1] = rs.getObject(i);
+			            }
+			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
+			            
+			            
+			        }
+
+			        rs.close();
+			        stat.close();
+			        conn.close();
+			    }
+			    catch (SQLException e1)
+			    {
+			    }
+				
+			}
+		});
+		Txt2.setBounds(121, 31, 101, 20);
+		panel_3.add(Txt2);
+		Txt2.setColumns(10);
 		
 		JLabel lblVisitante = new JLabel("Visitante");
 		lblVisitante.setForeground(new Color(0, 0, 102));
@@ -859,6 +988,20 @@ if(checkBox.isSelected()){
 		lblNewLabel_2.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg7.jpg"));
 		lblNewLabel_2.setBounds(17, 41, 463, 315);
 		menu2.add(lblNewLabel_2);
+		
+		JLabel lblNewLabel_3 = new JLabel("Voltar");
+		lblNewLabel_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				login.setVisible(true);
+				menu2.setVisible(false);		
+			}
+		});
+		lblNewLabel_3.setForeground(new Color(25, 25, 112));
+		lblNewLabel_3.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		lblNewLabel_3.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\undo.png"));
+		lblNewLabel_3.setBounds(17, 8, 67, 20);
+		menu2.add(lblNewLabel_3);
 		
 		
 	
@@ -878,10 +1021,11 @@ if(checkBox.isSelected()){
 	protected JTextField getTxt() {
 		return Txt;
 	}
-	protected JComboBox getComboBox4() {
-		return comboBox4;
-	}
+
 	protected JComboBox getComboBox3() {
 		return comboBox3;
+	}
+	protected JTextField getTxt2() {
+		return Txt2;
 	}
 }
