@@ -96,7 +96,7 @@ public class Login extends JFrame {
 		
 
 		setResizable(false);
-		setTitle("TP CP");
+		setTitle("TP - Complementos de Programa\u00E7\u00E3o");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 405);
 		contentPane = new JPanel();
