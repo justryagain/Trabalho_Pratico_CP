@@ -16,13 +16,21 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Vector;
 import java.math.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
@@ -41,6 +49,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JToolBar;
 
 
 
@@ -53,6 +62,7 @@ public class Login extends JFrame {
 	private JPanel menu;
 	private JPanel menu2;
 	private JTable table;
+	public static int id_epoca;
 	
 	/**
 	 * 
@@ -67,6 +77,16 @@ public class Login extends JFrame {
 	private JComboBox comboBox3;
 	private JTable table4;
 	private JTextField Txt2;
+	private JTable table5;
+	private JTextField Rnd_ep;
+	private JTextField Des_ep;
+	private JTextField Di_ep;
+	private JTextField Df_ep;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	private JTextField textField_6;
+	private JComboBox comboBox_editar_ep;
+	private JComboBox comboBox_eliminar;
 
 
 	/**
@@ -91,14 +111,13 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\logo.jpg"));
-		
+		setIconImage(Toolkit.getDefaultToolkit().getImage("img\\logo.jpg"));
 		
 
 		setResizable(false);
 		setTitle("TP - Complementos de Programa\u00E7\u00E3o");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 405);
+		setBounds(100, 100, 510, 405);
 		contentPane = new JPanel();
 		contentPane.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -137,6 +156,38 @@ public class Login extends JFrame {
 					menu.setVisible(true);
 					setBounds(100, 100, 500, 400);
 					
+					 //Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					  //Carrega os dados para comboBox (Administrator-Epoca-Designacao)
+					try{
+						
+				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_editar_ep.getModel();
+				   		DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_eliminar.getModel();
+				   		cb.removeAllElements();
+						cb2.removeAllElements();
+						
+						Statement st = conn.createStatement();
+						ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
+						
+					   	while(rs.next()){
+					   		cb.addElement(rs.getString("designacao"));
+					   		cb2.addElement(rs.getString("designacao"));
+					   	}		
+					   	
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}
+					
 				}else{
 					JOptionPane.showMessageDialog(null, "Dados incorretos!");
 				}
@@ -167,44 +218,42 @@ public class Login extends JFrame {
 					   e1.printStackTrace();
 				}
 				
+				
 				//Carrega os dados (Designação da Epoca) da BD para a comboBox.
 				try{
-									
-					Statement st = conn.createStatement();
-
-				   ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
-				while(rs.next()){
 					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox1.getModel();
-				    cb.addElement(rs.getString("designacao"));
-				    
-				    
-				   }
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("designacao"));				   				    
+					}
 				
 				}catch(SQLException se){
 					   se.printStackTrace();
 				}
-				
-				
+							
 				
 				//Carrega os dados (Nome das Equipas) da BD para a comboBox.
 				try{
-									
-					Statement st = conn.createStatement();
-
-				   ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
-				while(rs.next()){
 					DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox2.getModel();
 					DefaultComboBoxModel cb3 = (DefaultComboBoxModel) comboBox3.getModel();
-				    cb2.addElement(rs.getString("nome_equipa"));
-				    cb3.addElement(rs.getString("nome_equipa"));
-				    
-				   }
+					cb2.removeAllElements();
+					cb3.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+					while(rs.next()){
+					    cb2.addElement(rs.getString("nome_equipa"));
+					    cb3.addElement(rs.getString("nome_equipa"));    
+					}
 				
 				}catch(SQLException se){
 					   se.printStackTrace();
 				}
-			
-			
+		
 				
 				//Carrega todos os dados para a Table3.
 			    try
@@ -217,6 +266,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogador");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -224,25 +274,19 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table3.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table3.getModel()).insertRow(rs.getRow()-1,row);   
 			        }
-
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e1)
 			    {
 			    }
-				
-				
 			}
-
 		});
-		
-		
+				
 		btnVisitor.setBounds(173, 162, 112, 24);
 		login.add(btnVisitor);
 		
@@ -269,6 +313,359 @@ public class Login extends JFrame {
 		contentPane.add(menu, "name_951077423084622");
 		menu.setLayout(null);
 		
+		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane_1.setBounds(20, 48, 455, 302);
+		menu.add(tabbedPane_1);
+		
+		JPanel panel_9 = new JPanel();
+		panel_9.setBackground(Color.WHITE);
+		tabbedPane_1.addTab("\u00C9pocas", null, panel_9, null);
+		panel_9.setLayout(null);
+		
+		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane_2.setBounds(10, 11, 429, 252);
+		panel_9.add(tabbedPane_2);
+		
+		JPanel panel_17 = new JPanel();
+		panel_17.setBackground(Color.BLACK);
+		tabbedPane_2.addTab("Adicionar", null, panel_17, null);
+		panel_17.setLayout(null);
+		
+		JButton button_3 = new JButton("Adicionar");
+		button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				 //Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("INSERT INTO Epoca VALUES ("+ id_epoca +", '"+ Des_ep.getText() +"', '"+ Di_ep.getText() +"', '"+ Df_ep.getText() +"')");
+					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+					
+					Rnd_ep.setText("");
+					Des_ep.setText("");
+					Di_ep.setText("");
+					Df_ep.setText("");
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
+		});
+		button_3.setBackground(Color.WHITE);
+		button_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		button_3.setBounds(0, 170, 424, 35);
+		panel_17.add(button_3);
+		
+		JLabel lblNewLabel_4 = new JLabel("ID");
+		lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNewLabel_4.setForeground(Color.WHITE);
+		lblNewLabel_4.setBounds(10, 30, 46, 14);
+		panel_17.add(lblNewLabel_4);
+		
+		JLabel lblDesignao_1 = new JLabel("Designa\u00E7\u00E3o");
+		lblDesignao_1.setForeground(Color.WHITE);
+		lblDesignao_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDesignao_1.setBounds(10, 62, 61, 14);
+		panel_17.add(lblDesignao_1);
+		
+		JLabel lblDataDenicio = new JLabel("Data de \u00CDnicio");
+		lblDataDenicio.setForeground(Color.WHITE);
+		lblDataDenicio.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDenicio.setBounds(10, 96, 81, 14);
+		panel_17.add(lblDataDenicio);
+		
+		JLabel lblDataDeFim = new JLabel("Data de Fim");
+		lblDataDeFim.setForeground(Color.WHITE);
+		lblDataDeFim.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDeFim.setBounds(10, 130, 81, 14);
+		panel_17.add(lblDataDeFim);
+		
+		Rnd_ep = new JTextField();
+		Rnd_ep.setEditable(false);
+		Rnd_ep.setBounds(30, 25, 46, 20);
+		panel_17.add(Rnd_ep);
+		Rnd_ep.setColumns(10);
+		
+		Des_ep = new JTextField();
+		Des_ep.setBounds(101, 62, 106, 20);
+		panel_17.add(Des_ep);
+		Des_ep.setColumns(10);
+		
+		Di_ep = new JTextField();
+		Di_ep.setColumns(10);
+		Di_ep.setBounds(101, 96, 106, 20);
+		panel_17.add(Di_ep);
+		
+		Df_ep = new JTextField();
+		Df_ep.setColumns(10);
+		Df_ep.setBounds(101, 130, 106, 20);
+		panel_17.add(Df_ep);
+		
+		JButton btnNewButton_1 = new JButton("Criar");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Random r = new Random();
+				id_epoca = r.nextInt(999);
+				Rnd_ep.setText(String.valueOf(id_epoca));
+
+			}
+		});
+		btnNewButton_1.setBounds(101, 25, 106, 23);
+		panel_17.add(btnNewButton_1);
+		
+		JLabel lblNewLabel_5 = new JLabel("( Ex: 1997/1998 )");
+		lblNewLabel_5.setForeground(Color.WHITE);
+		lblNewLabel_5.setBounds(219, 65, 113, 14);
+		panel_17.add(lblNewLabel_5);
+		
+		JLabel lblExemploDdmmaa = new JLabel("( Ex: dd-mm-aa )");
+		lblExemploDdmmaa.setForeground(Color.WHITE);
+		lblExemploDdmmaa.setBounds(219, 97, 113, 14);
+		panel_17.add(lblExemploDdmmaa);
+		
+		JLabel lblExDdmmaa = new JLabel("( Ex: dd-mm-aa )");
+		lblExDdmmaa.setForeground(Color.WHITE);
+		lblExDdmmaa.setBounds(219, 131, 113, 14);
+		panel_17.add(lblExDdmmaa);
+		
+		JPanel panel_18 = new JPanel();
+		panel_18.setBackground(Color.BLACK);
+		tabbedPane_2.addTab("Editar", null, panel_18, null);
+		panel_18.setLayout(null);
+		
+		JLabel lblpocaAEditar = new JLabel("\u00C9poca a editar");
+		lblpocaAEditar.setForeground(Color.WHITE);
+		lblpocaAEditar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblpocaAEditar.setBounds(10, 22, 78, 14);
+		panel_18.add(lblpocaAEditar);
+		
+		comboBox_editar_ep = new JComboBox();
+		comboBox_editar_ep.setBounds(99, 20, 93, 20);
+		panel_18.add(comboBox_editar_ep);
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(6, 55, 410, 6);
+		panel_18.add(separator);
+		
+		JLabel lblDesignaop = new JLabel("Designa\u00E7\u00E3o");
+		lblDesignaop.setForeground(Color.WHITE);
+		lblDesignaop.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDesignaop.setBounds(10, 78, 78, 14);
+		panel_18.add(lblDesignaop);
+		
+		JLabel lblDataDeIncio = new JLabel("Data de in\u00EDcio");
+		lblDataDeIncio.setForeground(Color.WHITE);
+		lblDataDeIncio.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDeIncio.setBounds(10, 122, 78, 14);
+		panel_18.add(lblDataDeIncio);
+		
+		JLabel lblDataDeFim_1 = new JLabel("Data de fim");
+		lblDataDeFim_1.setForeground(Color.WHITE);
+		lblDataDeFim_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDeFim_1.setBounds(10, 174, 78, 14);
+		panel_18.add(lblDataDeFim_1);
+		
+		textField_4 = new JTextField();
+		textField_4.setBounds(99, 72, 93, 20);
+		panel_18.add(textField_4);
+		textField_4.setColumns(10);
+		
+		textField_5 = new JTextField();
+		textField_5.setColumns(10);
+		textField_5.setBounds(99, 120, 93, 20);
+		panel_18.add(textField_5);
+		
+		textField_6 = new JTextField();
+		textField_6.setColumns(10);
+		textField_6.setBounds(99, 172, 93, 20);
+		panel_18.add(textField_6);
+		
+		JButton btnEditar = new JButton("Editar");
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_editar_ep.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Epoca SET designacao='"+ textField_4.getText() +"' WHERE designacao='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_4.setText("");
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}				
+			
+		});
+		btnEditar.setBounds(202, 72, 78, 23);
+		panel_18.add(btnEditar);
+		
+		JButton button_2 = new JButton("Editar");
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {			
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_editar_ep.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Epoca SET data_inicio='"+ textField_5.getText() +"' WHERE designacao='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_5.setText("");
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		button_2.setBounds(202, 119, 78, 23);
+		panel_18.add(button_2);
+		
+		JButton button_4 = new JButton("Editar");
+		button_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_editar_ep.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Epoca SET data_fim='"+ textField_6.getText() +"' WHERE designacao='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_6.setText("");
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		button_4.setBounds(202, 171, 78, 23);
+		panel_18.add(button_4);
+		
+		JPanel panel_19 = new JPanel();
+		panel_19.setBackground(Color.BLACK);
+		tabbedPane_2.addTab("Eliminar", null, panel_19, null);
+		panel_19.setLayout(null);
+		
+		JButton btnEliminar = new JButton("Eliminar");
+		btnEliminar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_eliminar.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("DELETE FROM Epoca WHERE designacao='"+item+"'");
+					JOptionPane.showMessageDialog(null, "Dados eliminados com sucesso!");					
+					textField_6.setText("");
+					
+					//Atualiza a combobox depois de eliminar da base de dados a linha ecolhida.
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar.getModel();
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("designacao"));
+					}
+					
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnEliminar.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnEliminar.setBackground(Color.WHITE);
+		btnEliminar.setBounds(0, 170, 424, 35);
+		panel_19.add(btnEliminar);
+		
+		JLabel lblpocaAEliminar = new JLabel("\u00C9poca a eliminar");
+		lblpocaAEliminar.setForeground(Color.WHITE);
+		lblpocaAEliminar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblpocaAEliminar.setBounds(10, 21, 97, 14);
+		panel_19.add(lblpocaAEliminar);
+		
+		comboBox_eliminar = new JComboBox();
+		comboBox_eliminar.setBounds(117, 19, 93, 20);
+		panel_19.add(comboBox_eliminar);
+		
+		JPanel panel_10 = new JPanel();
+		tabbedPane_1.addTab("Equipas", null, panel_10, null);
+		
+		JPanel panel_11 = new JPanel();
+		tabbedPane_1.addTab("Jogadores", null, panel_11, null);
+		
+		JPanel panel_12 = new JPanel();
+		tabbedPane_1.addTab("Jogos", null, panel_12, null);
+		
+		JPanel panel_13 = new JPanel();
+		tabbedPane_1.addTab("Pontos", null, panel_13, null);
+		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(17, 33, 458, 14);
 		menu.add(separator_1);
@@ -288,11 +685,16 @@ public class Login extends JFrame {
 				menu.setVisible(false);
 			}
 		});
-		label.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\undo.png"));
+		label.setIcon(new ImageIcon("img\\undo.png"));
 		label.setForeground(new Color(25, 25, 112));
 		label.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		label.setBounds(17, 8, 67, 20);
 		menu.add(label);
+		
+		JLabel label_1 = new JLabel("");
+		label_1.setIcon(new ImageIcon("img\\bg7.jpg"));
+		label_1.setBounds(17, 41, 463, 315);
+		menu.add(label_1);
 		
 		
 		menu2 = new JPanel();
@@ -311,9 +713,9 @@ public class Login extends JFrame {
 		menu2.add(tabbedPane);
 		
 		JPanel panel = new JPanel();
-		panel.setToolTipText("Escolha a \u00C9poca e clique em Procurar.");
+		panel.setToolTipText("");
 		panel.setBackground(new Color(255, 255, 255));
-		tabbedPane.addTab("\u00C9poca", null, panel, null);
+		tabbedPane.addTab("\u00C9pocas", null, panel, null);
 		panel.setLayout(null);
 
 		
@@ -321,8 +723,7 @@ public class Login extends JFrame {
 		JButton btnNewButton = new JButton("Procurar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				
+					
 				String x = (String) comboBox1.getSelectedItem();
 				
 				//Ligação à base de dados.
@@ -348,6 +749,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Epoca WHERE designacao='"+x+"'");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -355,22 +757,17 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table.getModel()).insertRow(rs.getRow()-1,row); 
 			        }
-
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e)
 			    {
 			    }
-				
-
-
-				
+	
 			}
 		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -378,6 +775,7 @@ public class Login extends JFrame {
 		panel.add(btnNewButton);
 		
 		comboBox1 = new JComboBox();
+		comboBox1.setToolTipText("Escolha a \u00C9poca e clique em Procurar.");
 		comboBox1.setBounds(10, 36, 105, 20);
 		panel.add(comboBox1);
 		
@@ -456,6 +854,7 @@ public class Login extends JFrame {
 				        ResultSet rs = stat.executeQuery("SELECT * FROM Epoca");
 				        
 				        int colunas = rs.getMetaData().getColumnCount();
+				        
 				        while(rs.next())
 				        {  
 				            Object[] row = new Object[colunas];
@@ -463,15 +862,13 @@ public class Login extends JFrame {
 				            {  
 				                row[i - 1] = rs.getObject(i);
 				            }
-				            ((DefaultTableModel) table.getModel()).insertRow(rs.getRow()-1,row);
-				            
-				            
+				            ((DefaultTableModel) table.getModel()).insertRow(rs.getRow()-1,row);  
 				        }
-
 				        rs.close();
 				        stat.close();
 				        conn.close();
 				    }
+				    
 				    catch (SQLException e1)
 				    {
 				    }
@@ -480,8 +877,7 @@ public class Login extends JFrame {
 					DefaultTableModel dm = (DefaultTableModel)table.getModel();
 					dm.getDataVector().removeAllElements();
 					dm.fireTableDataChanged();
-				}
-				
+				}	
 			}
 		});
 		checkBox2.setVerticalAlignment(SwingConstants.TOP);
@@ -504,7 +900,7 @@ public class Login extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(new Color(255, 255, 255));
-		tabbedPane.addTab("Equipa", null, panel_1, null);
+		tabbedPane.addTab("Equipas", null, panel_1, null);
 		panel_1.setLayout(null);
 		
 		JButton button = new JButton("Procurar");
@@ -536,6 +932,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Equipa WHERE nome_equipa='"+x+"'");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -543,19 +940,16 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table2.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table2.getModel()).insertRow(rs.getRow()-1,row);			            			            
 			        }
-
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e)
 			    {
-			    }
-				
+			    }				
 			}
 		});
 		
@@ -638,6 +1032,7 @@ public class Login extends JFrame {
 				        ResultSet rs = stat.executeQuery("SELECT * FROM Equipa");
 				        
 				        int colunas = rs.getMetaData().getColumnCount();
+				        
 				        while(rs.next())
 				        {  
 				            Object[] row = new Object[colunas];
@@ -645,15 +1040,13 @@ public class Login extends JFrame {
 				            {  
 				                row[i - 1] = rs.getObject(i);
 				            }
-				            ((DefaultTableModel) table2.getModel()).insertRow(rs.getRow()-1,row);
-				            
-				            
+				            ((DefaultTableModel) table2.getModel()).insertRow(rs.getRow()-1,row);				            			            
 				        }
-
 				        rs.close();
 				        stat.close();
 				        conn.close();
 				    }
+				    
 				    catch (SQLException e)
 				    {
 				    }
@@ -662,8 +1055,7 @@ public class Login extends JFrame {
 					DefaultTableModel dm = (DefaultTableModel)table2.getModel();
 					dm.getDataVector().removeAllElements();
 					dm.fireTableDataChanged();
-				}
-				
+				}		
 			}
 		});
 		checkBox.setVerticalAlignment(SwingConstants.TOP);
@@ -715,6 +1107,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogador WHERE nome_jogador LIKE '"+Txt.getText()+"%'");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -722,19 +1115,16 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table3.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table3.getModel()).insertRow(rs.getRow()-1,row);			            			            
 			        }
-
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e1)
 			    {
-			    }
-			    
+			    }	    
 			}
 		});
 
@@ -805,6 +1195,7 @@ public class Login extends JFrame {
 				        ResultSet rs = stat.executeQuery("SELECT * FROM Jogo");
 				        
 				        int colunas = rs.getMetaData().getColumnCount();
+				        
 				        while(rs.next())
 				        {  
 				            Object[] row = new Object[colunas];
@@ -812,15 +1203,13 @@ public class Login extends JFrame {
 				            {  
 				                row[i - 1] = rs.getObject(i);
 				            }
-				            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
-				            
-				            
+				            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);			         		            
 				        }
-
 				        rs.close();
 				        stat.close();
 				        conn.close();
 				    }
+				    
 				    catch (SQLException e1)
 				    {
 				    }
@@ -829,10 +1218,10 @@ public class Login extends JFrame {
 					DefaultTableModel dm = (DefaultTableModel)table4.getModel();
 					dm.getDataVector().removeAllElements();
 					dm.fireTableDataChanged();
-				}
-				
+				}				
 			}
 		});
+		
 		checkBox3.setVerticalAlignment(SwingConstants.TOP);
 		checkBox3.setHorizontalAlignment(SwingConstants.CENTER);
 		checkBox3.setBounds(400, 23, 35, 23);
@@ -868,8 +1257,7 @@ public class Login extends JFrame {
 		JButton button_1 = new JButton("Procurar");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				
+							
 				DefaultTableModel dm = (DefaultTableModel)table4.getModel();
 				dm.getDataVector().removeAllElements();
 				dm.fireTableDataChanged();
@@ -896,6 +1284,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogo WHERE equipa_casa='"+x+"' OR equipa_visitante='"+x+"'");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -903,22 +1292,20 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);			            			          
 			        }
 
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e)
 			    {
-			    }
-				
-				
+			    }					
 			}
 		});
+		
 		button_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		button_1.setBounds(10, 71, 429, 31);
 		panel_3.add(button_1);
@@ -946,8 +1333,7 @@ public class Login extends JFrame {
 		Txt2 = new JTextField();
 		Txt2.setToolTipText("Escreva o dia, o m\u00EAs ou o ano do jogo.");
 		Txt2.addCaretListener(new CaretListener() {
-			public void caretUpdate(CaretEvent arg0) {
-				
+			public void caretUpdate(CaretEvent arg0) {			
 				
 				//Ligação à base de dados.
 				Connection conn = null;
@@ -972,6 +1358,7 @@ public class Login extends JFrame {
 			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogo WHERE data LIKE '%"+Txt2.getText()+"%'");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
+			        
 			        while(rs.next())
 			        {  
 			            Object[] row = new Object[colunas];
@@ -979,24 +1366,125 @@ public class Login extends JFrame {
 			            {  
 			                row[i - 1] = rs.getObject(i);
 			            }
-			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);
-			            
-			            
+			            ((DefaultTableModel) table4.getModel()).insertRow(rs.getRow()-1,row);			            			            
 			        }
-
 			        rs.close();
 			        stat.close();
 			        conn.close();
 			    }
+			    
 			    catch (SQLException e1)
 			    {
-			    }
-				
+			    }				
 			}
 		});
+		
 		Txt2.setBounds(121, 31, 101, 20);
 		panel_3.add(Txt2);
 		Txt2.setColumns(10);
+		
+		JPanel panel_7 = new JPanel();
+		panel_7.setForeground(new Color(0, 0, 153));
+		panel_7.setBackground(Color.WHITE);
+		tabbedPane.addTab("Classifica\u00E7\u00E3o", null, panel_7, null);
+		panel_7.setLayout(null);
+		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		scrollPane_4.setBounds(10, 50, 430, 213);
+		panel_7.add(scrollPane_4);
+		
+		table5 = new JTable();
+		table5.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"C\u00F3d", "Equipa", "Pontos", "Vit\u00F3rias", "Empates", "Derrotas"
+			}
+		));
+		table5.getColumnModel().getColumn(0).setPreferredWidth(42);
+		table5.getColumnModel().getColumn(1).setPreferredWidth(167);
+		table5.getColumnModel().getColumn(2).setPreferredWidth(90);
+		table5.getColumnModel().getColumn(3).setPreferredWidth(83);
+		table5.getColumnModel().getColumn(4).setPreferredWidth(81);
+		table5.getColumnModel().getColumn(5).setPreferredWidth(89);
+		
+		
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table5.getModel());
+		table5.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		 
+		int columnIndexToSort = 2;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		 
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+		scrollPane_4.setViewportView(table5);
+		table5.setForeground(new Color(0, 0, 204));
+		
+		JLabel lblTabelaClassificativa = new JLabel("Tabela Classificativa");
+		lblTabelaClassificativa.setForeground(new Color(0, 0, 153));
+		lblTabelaClassificativa.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblTabelaClassificativa.setBounds(145, 11, 163, 14);
+		panel_7.add(lblTabelaClassificativa);
+		
+		JLabel lblAtualizar = new JLabel("Atualizar");
+		lblAtualizar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				 //Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				//Carrega todos os dados para a Table5.
+			    try
+			    {
+					DefaultTableModel dm = (DefaultTableModel)table5.getModel();
+					dm.getDataVector().removeAllElements();
+					dm.fireTableDataChanged();
+					
+			        Statement stat = conn.createStatement();
+			        ResultSet rs = stat.executeQuery("SELECT * FROM Classificacao ORDER BY pontos DESC");
+			        
+			        int colunas = rs.getMetaData().getColumnCount();
+			        
+			        while(rs.next())
+			        {  
+			            Object[] row = new Object[colunas];
+			            for (int i = 1; i <= colunas; i++)
+			            {  
+			                row[i - 1] = rs.getObject(i);
+			            }
+			            ((DefaultTableModel) table5.getModel()).insertRow(rs.getRow()-1,row);        
+			        }
+			        rs.close();
+			        stat.close();
+			        conn.close();
+			    }
+			    
+			    catch (SQLException e1)
+			    {
+			    }			    
+			}
+		});
+		
+		lblAtualizar.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		lblAtualizar.setForeground(new Color(0, 0, 153));
+		lblAtualizar.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\refresh.png"));
+		lblAtualizar.setBounds(10, 27, 73, 14);
+		panel_7.add(lblAtualizar);
+		
+		JPanel panel_8 = new JPanel();
+		panel_8.setBackground(Color.WHITE);
+		tabbedPane.addTab("Estat\u00EDstica", null, panel_8, null);
+		panel_8.setLayout(null);
 		
 		JLabel lblVisitante = new JLabel("Visitante");
 		lblVisitante.setForeground(new Color(0, 0, 102));
@@ -1005,7 +1493,7 @@ public class Login extends JFrame {
 		lblVisitante.setBounds(200, 8, 97, 20);
 		menu2.add(lblVisitante);
 		
-		JLabel lblNewLabel_2 = new JLabel("New label");
+		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg7.jpg"));
 		lblNewLabel_2.setBounds(17, 41, 463, 315);
 		menu2.add(lblNewLabel_2);
@@ -1048,5 +1536,20 @@ public class Login extends JFrame {
 	}
 	protected JTextField getTxt2() {
 		return Txt2;
+	}
+	protected JTable getTable5() {
+		return table5;
+	}
+	public JTextField getRnd() {
+		return Rnd_ep;
+	}
+	protected JComboBox getComboBox_editar_ep() {
+		return comboBox_editar_ep;
+	}
+	protected JTextField getTextField_4() {
+		return textField_4;
+	}
+	protected JComboBox getComboBox_eliminar() {
+		return comboBox_eliminar;
 	}
 }
