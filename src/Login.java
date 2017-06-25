@@ -63,6 +63,7 @@ public class Login extends JFrame {
 	private JPanel menu2;
 	private JTable table;
 	public static int id_epoca;
+	public static int id_equipa;
 	
 	/**
 	 * 
@@ -86,7 +87,16 @@ public class Login extends JFrame {
 	private JTextField textField_5;
 	private JTextField textField_6;
 	private JComboBox comboBox_editar_ep;
-	private JComboBox comboBox_eliminar;
+	private JComboBox comboBox_eliminar_ep;
+	private JTextField Rnd_Eq;
+	private JTextField Nde_eq;
+	private JTextField Ndes_eq;
+	private JTextField Ddf_eq;
+	private JTextField textField_7;
+	private JTextField textField_8;
+	private JTextField textField_9;
+	private JComboBox comboBox_editar_eq;
+	private JComboBox comboBox_eliminar_eq;
 
 
 	/**
@@ -172,7 +182,7 @@ public class Login extends JFrame {
 					try{
 						
 				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_editar_ep.getModel();
-				   		DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_eliminar.getModel();
+				   		DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_eliminar_ep.getModel();
 				   		cb.removeAllElements();
 						cb2.removeAllElements();
 						
@@ -182,6 +192,35 @@ public class Login extends JFrame {
 					   	while(rs.next()){
 					   		cb.addElement(rs.getString("designacao"));
 					   		cb2.addElement(rs.getString("designacao"));
+					   	}		
+					   	
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					  //Carrega os dados para comboBox (Administrator-Equipa-Nome da Equipa)
+					try{
+						
+				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_editar_eq.getModel();
+				   		DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_eliminar_eq.getModel();
+				   		cb.removeAllElements();
+						cb2.removeAllElements();
+						
+						Statement st = conn.createStatement();
+						ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+						
+					   	while(rs.next()){
+					   		cb.addElement(rs.getString("nome_equipa"));
+					   		cb2.addElement(rs.getString("nome_equipa"));
 					   	}		
 					   	
 					}catch(SQLException se){
@@ -327,7 +366,7 @@ public class Login extends JFrame {
 		panel_9.add(tabbedPane_2);
 		
 		JPanel panel_17 = new JPanel();
-		panel_17.setBackground(Color.BLACK);
+		panel_17.setBackground(new Color(0, 0, 0));
 		tabbedPane_2.addTab("Adicionar", null, panel_17, null);
 		panel_17.setLayout(null);
 		
@@ -362,9 +401,8 @@ public class Login extends JFrame {
 					e.printStackTrace();
 				}
 			}
-			
-			
 		});
+		
 		button_3.setBackground(Color.WHITE);
 		button_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		button_3.setBounds(0, 170, 424, 35);
@@ -444,7 +482,7 @@ public class Login extends JFrame {
 		panel_17.add(lblExDdmmaa);
 		
 		JPanel panel_18 = new JPanel();
-		panel_18.setBackground(Color.BLACK);
+		panel_18.setBackground(new Color(0, 0, 0));
 		tabbedPane_2.addTab("Editar", null, panel_18, null);
 		panel_18.setLayout(null);
 		
@@ -594,7 +632,7 @@ public class Login extends JFrame {
 		panel_18.add(button_4);
 		
 		JPanel panel_19 = new JPanel();
-		panel_19.setBackground(Color.BLACK);
+		panel_19.setBackground(new Color(0, 0, 0));
 		tabbedPane_2.addTab("Eliminar", null, panel_19, null);
 		panel_19.setLayout(null);
 		
@@ -616,21 +654,24 @@ public class Login extends JFrame {
 				
 				//Inserir dados em Epoca
 				try {
-					String item = (String) comboBox_eliminar.getSelectedItem();
+					String item = (String) comboBox_eliminar_ep.getSelectedItem();
 					Statement stat = conn.createStatement();
 					stat.executeUpdate("DELETE FROM Epoca WHERE designacao='"+item+"'");
 					JOptionPane.showMessageDialog(null, "Dados eliminados com sucesso!");					
 					textField_6.setText("");
 					
 					//Atualiza a combobox depois de eliminar da base de dados a linha ecolhida.
-					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar.getModel();
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar_ep.getModel();
+					DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_editar_ep.getModel();
 					cb.removeAllElements();
+					cb2.removeAllElements();
 					
 					Statement st = conn.createStatement();
 					ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
 					
 					while(rs.next()){
 						cb.addElement(rs.getString("designacao"));
+						cb2.addElement(rs.getString("designacao"));
 					}
 					
 					
@@ -650,12 +691,357 @@ public class Login extends JFrame {
 		lblpocaAEliminar.setBounds(10, 21, 97, 14);
 		panel_19.add(lblpocaAEliminar);
 		
-		comboBox_eliminar = new JComboBox();
-		comboBox_eliminar.setBounds(117, 19, 93, 20);
-		panel_19.add(comboBox_eliminar);
+		comboBox_eliminar_ep = new JComboBox();
+		comboBox_eliminar_ep.setBounds(117, 19, 93, 20);
+		panel_19.add(comboBox_eliminar_ep);
+		
+		JLabel lblNewLabel_6 = new JLabel("");
+		lblNewLabel_6.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		lblNewLabel_6.setBounds(0, 0, 450, 274);
+		panel_9.add(lblNewLabel_6);
 		
 		JPanel panel_10 = new JPanel();
+		panel_10.setBackground(Color.WHITE);
 		tabbedPane_1.addTab("Equipas", null, panel_10, null);
+		panel_10.setLayout(null);
+		
+		JTabbedPane tabbedPane_3 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane_3.setBounds(10, 11, 429, 252);
+		panel_10.add(tabbedPane_3);
+		
+		JPanel panel_14 = new JPanel();
+		panel_14.setBackground(new Color(0, 0, 0));
+		tabbedPane_3.addTab("Adicionar", null, panel_14, null);
+		panel_14.setLayout(null);
+		
+		Rnd_Eq = new JTextField();
+		Rnd_Eq.setEditable(false);
+		Rnd_Eq.setColumns(10);
+		Rnd_Eq.setBounds(30, 25, 46, 20);
+		panel_14.add(Rnd_Eq);
+		
+		JButton Criar_rnd = new JButton("Criar");
+		Criar_rnd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Random r = new Random();
+				id_equipa = r.nextInt(999);
+				Rnd_Eq.setText(String.valueOf(id_equipa));
+			}
+		});
+		Criar_rnd.setBounds(120, 24, 106, 23);
+		panel_14.add(Criar_rnd);
+		
+		JLabel label_2 = new JLabel("ID");
+		label_2.setForeground(Color.WHITE);
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		label_2.setBounds(10, 30, 46, 14);
+		panel_14.add(label_2);
+		
+		JLabel lblNomeDaEquipa = new JLabel("Nome da Equipa");
+		lblNomeDaEquipa.setForeground(Color.WHITE);
+		lblNomeDaEquipa.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNomeDaEquipa.setBounds(10, 62, 100, 14);
+		panel_14.add(lblNomeDaEquipa);
+		
+		Nde_eq = new JTextField();
+		Nde_eq.setColumns(10);
+		Nde_eq.setBounds(120, 62, 106, 20);
+		panel_14.add(Nde_eq);
+		
+		JLabel lblExSporting = new JLabel("( Ex: \"Sporting\" )");
+		lblExSporting.setForeground(Color.WHITE);
+		lblExSporting.setBounds(240, 65, 113, 14);
+		panel_14.add(lblExSporting);
+		
+		JLabel lblNomeDoEstdio = new JLabel("Nome do Est\u00E1dio");
+		lblNomeDoEstdio.setForeground(Color.WHITE);
+		lblNomeDoEstdio.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNomeDoEstdio.setBounds(10, 96, 100, 14);
+		panel_14.add(lblNomeDoEstdio);
+		
+		JLabel lblDataDeFundao = new JLabel("Data de Funda\u00E7\u00E3o");
+		lblDataDeFundao.setForeground(Color.WHITE);
+		lblDataDeFundao.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDeFundao.setBounds(10, 130, 100, 14);
+		panel_14.add(lblDataDeFundao);
+		
+		JButton add_eq = new JButton("Adicionar");
+		add_eq.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				 //Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("INSERT INTO Equipa VALUES ("+ id_equipa +", '"+ Nde_eq.getText() +"', '"+ Ndes_eq.getText() +"', '"+ Ddf_eq.getText() +"')");
+					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+					
+					Rnd_Eq.setText("");
+					Nde_eq.setText("");
+					Ndes_eq.setText("");
+					Ddf_eq.setText("");
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		add_eq.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		add_eq.setBackground(Color.WHITE);
+		add_eq.setBounds(0, 170, 424, 35);
+		panel_14.add(add_eq);
+		
+		Ndes_eq = new JTextField();
+		Ndes_eq.setColumns(10);
+		Ndes_eq.setBounds(120, 96, 106, 20);
+		panel_14.add(Ndes_eq);
+		
+		Ddf_eq = new JTextField();
+		Ddf_eq.setColumns(10);
+		Ddf_eq.setBounds(120, 130, 106, 20);
+		panel_14.add(Ddf_eq);
+		
+		JLabel lblExEstdio = new JLabel("( Ex: \"Est\u00E1dio de Alvalade\" )");
+		lblExEstdio.setForeground(Color.WHITE);
+		lblExEstdio.setBounds(240, 97, 135, 14);
+		panel_14.add(lblExEstdio);
+		
+		JLabel label_8 = new JLabel("( Ex: dd-mm-aa )");
+		label_8.setForeground(Color.WHITE);
+		label_8.setBounds(240, 131, 113, 14);
+		panel_14.add(label_8);
+		
+		JPanel panel_15 = new JPanel();
+		panel_15.setBackground(new Color(0, 0, 0));
+		panel_15.setForeground(Color.WHITE);
+		tabbedPane_3.addTab("Editar", null, panel_15, null);
+		panel_15.setLayout(null);
+		
+		JLabel lblEquipaAEditar = new JLabel("Equipa a editar");
+		lblEquipaAEditar.setForeground(Color.WHITE);
+		lblEquipaAEditar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblEquipaAEditar.setBounds(14, 22, 93, 14);
+		panel_15.add(lblEquipaAEditar);
+		
+		comboBox_editar_eq = new JComboBox();
+		comboBox_editar_eq.setBounds(125, 20, 93, 20);
+		panel_15.add(comboBox_editar_eq);
+		
+		JSeparator separator_2 = new JSeparator();
+		separator_2.setBounds(10, 55, 410, 6);
+		panel_15.add(separator_2);
+		
+		textField_7 = new JTextField();
+		textField_7.setColumns(10);
+		textField_7.setBounds(125, 72, 93, 20);
+		panel_15.add(textField_7);
+		
+		JLabel lblNomeDaEquipa_1 = new JLabel("Nome da Equipa");
+		lblNomeDaEquipa_1.setForeground(Color.WHITE);
+		lblNomeDaEquipa_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNomeDaEquipa_1.setBounds(14, 78, 93, 14);
+		panel_15.add(lblNomeDaEquipa_1);
+		
+		JButton button_7 = new JButton("Editar");
+		button_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_editar_eq.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Equipa SET nome_equipa='"+ textField_7.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_7.setText("");
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		button_7.setBounds(228, 72, 78, 23);
+		panel_15.add(button_7);
+		
+		textField_8 = new JTextField();
+		textField_8.setColumns(10);
+		textField_8.setBounds(125, 120, 93, 20);
+		panel_15.add(textField_8);
+		
+		JLabel lblNomeDeEstdio = new JLabel("Nome de Est\u00E1dio");
+		lblNomeDeEstdio.setForeground(Color.WHITE);
+		lblNomeDeEstdio.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNomeDeEstdio.setBounds(14, 122, 93, 14);
+		panel_15.add(lblNomeDeEstdio);
+		
+		JButton button_8 = new JButton("Editar");
+		button_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				try {
+					String item = (String) comboBox_editar_eq.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Equipa SET nome_estadio='"+ textField_8.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_8.setText("");
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}	
+			}
+		});
+		button_8.setBounds(228, 119, 78, 23);
+		panel_15.add(button_8);
+		
+		JButton button_9 = new JButton("Editar");
+		button_9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_editar_eq.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("UPDATE Equipa SET data_fundacao='"+ textField_9.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+					textField_9.setText("");
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}	
+			}
+		});
+		button_9.setBounds(228, 171, 78, 23);
+		panel_15.add(button_9);
+		
+		textField_9 = new JTextField();
+		textField_9.setColumns(10);
+		textField_9.setBounds(125, 172, 93, 20);
+		panel_15.add(textField_9);
+		
+		JLabel lblDataDeFundao_1 = new JLabel("Data de Funda\u00E7\u00E3o");
+		lblDataDeFundao_1.setForeground(Color.WHITE);
+		lblDataDeFundao_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDataDeFundao_1.setBounds(14, 174, 104, 14);
+		panel_15.add(lblDataDeFundao_1);
+		
+		JPanel panel_16 = new JPanel();
+		panel_16.setBackground(new Color(0, 0, 0));
+		tabbedPane_3.addTab("Eliminar", null, panel_16, null);
+		panel_16.setLayout(null);
+		
+		JLabel lblEquipaAEliminar = new JLabel("Equipa a eliminar");
+		lblEquipaAEliminar.setForeground(Color.WHITE);
+		lblEquipaAEliminar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblEquipaAEliminar.setBounds(10, 21, 97, 14);
+		panel_16.add(lblEquipaAEliminar);
+		
+		comboBox_eliminar_eq = new JComboBox();
+		comboBox_eliminar_eq.setBounds(117, 19, 93, 20);
+		panel_16.add(comboBox_eliminar_eq);
+		
+		JButton button_5 = new JButton("Eliminar");
+		button_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Inserir dados em Epoca
+				try {
+					String item = (String) comboBox_eliminar_eq.getSelectedItem();
+					Statement stat = conn.createStatement();
+					stat.executeUpdate("DELETE FROM Equipa WHERE nome_equipa='"+item+"'");
+					JOptionPane.showMessageDialog(null, "Dados eliminados com sucesso!");					
+					textField_6.setText("");
+					
+					//Atualiza a combobox depois de eliminar da base de dados a linha ecolhida.
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar_eq.getModel();
+					DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_editar_eq.getModel();
+					cb.removeAllElements();
+					cb2.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("nome_equipa"));
+						cb2.addElement(rs.getString("nome_equipa"));
+					}
+					
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		button_5.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		button_5.setBackground(Color.WHITE);
+		button_5.setBounds(0, 170, 424, 35);
+		panel_16.add(button_5);
+		
+		JLabel lblNewLabel_7 = new JLabel("");
+		lblNewLabel_7.setBackground(new Color(0, 0, 0));
+		lblNewLabel_7.setForeground(new Color(0, 0, 0));
+		lblNewLabel_7.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		lblNewLabel_7.setBounds(0, 0, 450, 274);
+		panel_10.add(lblNewLabel_7);
 		
 		JPanel panel_11 = new JPanel();
 		tabbedPane_1.addTab("Jogadores", null, panel_11, null);
@@ -1550,6 +1936,21 @@ public class Login extends JFrame {
 		return textField_4;
 	}
 	protected JComboBox getComboBox_eliminar() {
-		return comboBox_eliminar;
+		return comboBox_eliminar_ep;
+	}
+	protected JComboBox getComboBox_editar_eq() {
+		return comboBox_editar_eq;
+	}
+	protected JComboBox getComboBox_eliminar_eq() {
+		return comboBox_eliminar_eq;
+	}
+	protected JTextField getTextField_7() {
+		return textField_7;
+	}
+	public JTextField getTextField_8() {
+		return textField_8;
+	}
+	public JTextField getTextField_9() {
+		return textField_9;
 	}
 }
