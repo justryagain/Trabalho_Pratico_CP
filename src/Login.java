@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -127,7 +128,7 @@ public class Login extends JFrame {
 		setResizable(false);
 		setTitle("TP - Complementos de Programa\u00E7\u00E3o");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 510, 405);
+		setBounds(100, 100, 510, 439);
 		contentPane = new JPanel();
 		contentPane.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -135,6 +136,7 @@ public class Login extends JFrame {
 		contentPane.setLayout(new CardLayout(0, 0));
 		
 		JPanel login = new JPanel();
+		login.setBackground(Color.WHITE);
 		contentPane.add(login, "name_951077403946935");
 		login.setLayout(null);
 		
@@ -144,12 +146,14 @@ public class Login extends JFrame {
 		login.add(username);
 		username.setColumns(10);
 		
-		password = new JTextField();
-		password.setToolTipText("");
+		
+		password = new JPasswordField();
 		password.setForeground(new Color(0, 0, 204));
 		password.setBounds(173, 97, 112, 20);
 		login.add(password);
 		password.setColumns(10);
+		
+		
 		
 		JButton btnSign = new JButton("Entrar");
 		btnSign.setForeground(new Color(0, 0, 102));
@@ -164,7 +168,7 @@ public class Login extends JFrame {
 				
 					login.setVisible(false);
 					menu.setVisible(true);
-					setBounds(100, 100, 500, 400);
+					//setBounds(100, 100, 500, 400);
 					
 					 //Ligação à base de dados.
 					Connection conn = null;
@@ -243,7 +247,7 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				login.setVisible(false);
 				menu2.setVisible(true);
-				setBounds(100, 100, 500, 405);
+				//setBounds(100, 100, 500, 405);
 				
 				 //Ligação à base de dados.
 				Connection conn = null;
@@ -345,10 +349,11 @@ public class Login extends JFrame {
 		lblNewLabel_1.setFont(new Font("Trebuchet MS", Font.PLAIN, 11));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg7.jpg"));
-		lblNewLabel_1.setBounds(0, 0, 484, 367);
+		lblNewLabel_1.setBounds(0, 0, 494, 401);
 		login.add(lblNewLabel_1);
 		
 		menu = new JPanel();
+		menu.setBackground(Color.WHITE);
 		contentPane.add(menu, "name_951077423084622");
 		menu.setLayout(null);
 		
@@ -1044,13 +1049,34 @@ public class Login extends JFrame {
 		panel_10.add(lblNewLabel_7);
 		
 		JPanel panel_11 = new JPanel();
+		panel_11.setBackground(Color.WHITE);
 		tabbedPane_1.addTab("Jogadores", null, panel_11, null);
+		panel_11.setLayout(null);
+		
+		JLabel lblNewLabel_8 = new JLabel("");
+		lblNewLabel_8.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		lblNewLabel_8.setBounds(0, 0, 450, 274);
+		panel_11.add(lblNewLabel_8);
 		
 		JPanel panel_12 = new JPanel();
+		panel_12.setBackground(Color.WHITE);
 		tabbedPane_1.addTab("Jogos", null, panel_12, null);
+		panel_12.setLayout(null);
+		
+		JLabel lblNewLabel_9 = new JLabel("");
+		lblNewLabel_9.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		lblNewLabel_9.setBounds(0, 0, 450, 274);
+		panel_12.add(lblNewLabel_9);
 		
 		JPanel panel_13 = new JPanel();
+		panel_13.setBackground(Color.WHITE);
 		tabbedPane_1.addTab("Pontos", null, panel_13, null);
+		panel_13.setLayout(null);
+		
+		JLabel lblNewLabel_10 = new JLabel("");
+		lblNewLabel_10.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		lblNewLabel_10.setBounds(0, 0, 450, 274);
+		panel_13.add(lblNewLabel_10);
 		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(17, 33, 458, 14);
@@ -1071,15 +1097,15 @@ public class Login extends JFrame {
 				menu.setVisible(false);
 			}
 		});
-		label.setIcon(new ImageIcon("img\\undo.png"));
+		label.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\undo.png"));
 		label.setForeground(new Color(25, 25, 112));
 		label.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		label.setBounds(17, 8, 67, 20);
 		menu.add(label);
 		
 		JLabel label_1 = new JLabel("");
-		label_1.setIcon(new ImageIcon("img\\bg7.jpg"));
-		label_1.setBounds(17, 41, 463, 315);
+		label_1.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
+		label_1.setBounds(10, 41, 474, 349);
 		menu.add(label_1);
 		
 		
@@ -1881,7 +1907,7 @@ public class Login extends JFrame {
 		
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg7.jpg"));
-		lblNewLabel_2.setBounds(17, 41, 463, 315);
+		lblNewLabel_2.setBounds(10, 41, 474, 349);
 		menu2.add(lblNewLabel_2);
 		
 		JLabel lblNewLabel_3 = new JLabel("Voltar");
@@ -1952,5 +1978,8 @@ public class Login extends JFrame {
 	}
 	public JTextField getTextField_9() {
 		return textField_9;
+	}
+	protected JTextField getPassword() {
+		return password;
 	}
 }
