@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -52,6 +53,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JToolBar;
 import javax.swing.JProgressBar;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 
 
@@ -93,7 +96,7 @@ public class Login extends JFrame {
 	private JTextField textField_6;
 	private JComboBox comboBox_editar_ep;
 	private JComboBox comboBox_eliminar_ep;
-	private JTextField Rnd_Eq;
+	private JTextField Rnd_eq;
 	private JTextField Nde_eq;
 	private JTextField Ndes_eq;
 	private JTextField Ddf_eq;
@@ -118,6 +121,11 @@ public class Login extends JFrame {
 	private JComboBox comboBox_add_v;
 	private JTextField vitoria_jg;
 	private JTextField derrota_jg;
+	private JComboBox Eq_jgd;
+	private JTextField textField_e;
+	private JCheckBox chck_empate;
+	private JComboBox marcador_Equipa;
+	private JComboBox marcador_Jogador;
 
 
 	/**
@@ -142,9 +150,7 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("img\\logo.jpg"));
-		
-
+		setIconImage(Toolkit.getDefaultToolkit().getImage("imagens\\logo.jpg"));
 		setResizable(false);
 		setTitle("TP - Complementos de Programa\u00E7\u00E3o");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,6 +160,7 @@ public class Login extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
+		setLocationRelativeTo(null);
 		
 		JPanel login = new JPanel();
 		login.setBackground(Color.WHITE);
@@ -184,7 +191,8 @@ public class Login extends JFrame {
 					String pass = password.getText();
 					
 					if (user.equals("admin") && pass.equals("admin")){
-					
+						username.setText("");
+						password.setText("");
 						login.setVisible(false);
 						menu.setVisible(true);
 						//setBounds(100, 100, 500, 400);
@@ -255,6 +263,7 @@ public class Login extends JFrame {
 							
 					   		DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_add_ec.getModel();
 					   		DefaultComboBoxModel cb2 = (DefaultComboBoxModel) comboBox_add_v.getModel();
+					   		
 
 					   		cb.removeAllElements();
 							cb2.removeAllElements();
@@ -272,6 +281,59 @@ public class Login extends JFrame {
 							   se.printStackTrace();
 						}
 						
+						//Carrega os dados para as comboBox (Administrator-Jogador-Nome da Equipa)
+						try{
+							
+					   		DefaultComboBoxModel cb = (DefaultComboBoxModel) Eq_jgd.getModel();				  
+					   		cb.removeAllElements();
+							
+							Statement st = conn.createStatement();
+							ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+							
+						   	while(rs.next()){
+						   		cb.addElement(rs.getString("nome_equipa"));
+					 
+						   	}		
+						   	
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}
+						
+						//Carrega os dados para as comboBox (Administrator-Marcador-Equipa)
+						try{
+							
+					   		DefaultComboBoxModel cb = (DefaultComboBoxModel) marcador_Equipa.getModel();				  
+					   		cb.removeAllElements();
+							
+							Statement st = conn.createStatement();
+							ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+							
+						   	while(rs.next()){
+						   		cb.addElement(rs.getString("nome_equipa"));
+					 
+						   	}		
+						   	
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}
+						
+						//Carrega os dados para as comboBox (Administrator-Marcador-Plantel)
+						try{
+							
+					   		DefaultComboBoxModel cb = (DefaultComboBoxModel) marcador_Jogador.getModel();				  
+					   		cb.removeAllElements();
+							
+							Statement st = conn.createStatement();
+							ResultSet rs = st.executeQuery("SELECT DISTINCT Jogador.nome_jogador FROM Plantel JOIN Jogador ON Plantel.id_jogador = Jogador.id_jogador WHERE Jogador.equipa = 'Sporting' ");
+							
+						   	while(rs.next()){
+						   		cb.addElement(rs.getString("nome_jogador"));
+					 
+						   	}		
+						   	
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}
 						
 					}else{
 						JOptionPane.showMessageDialog(null, "Dados incorretos!");
@@ -288,10 +350,10 @@ public class Login extends JFrame {
 				String pass = password.getText();
 				
 				if (user.equals("admin") && pass.equals("admin")){
-				
+					username.setText("");
+					password.setText("");
 					login.setVisible(false);
 					menu.setVisible(true);
-					//setBounds(100, 100, 500, 400);
 					
 					 //Ligação à base de dados.
 					Connection conn = null;
@@ -376,6 +438,60 @@ public class Login extends JFrame {
 						   se.printStackTrace();
 					}
 					
+					//Carrega os dados para as comboBox (Administrator-Jogador-Equipa)
+					try{
+						
+				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) Eq_jgd.getModel();				  
+				   		cb.removeAllElements();
+						
+						Statement st = conn.createStatement();
+						ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+						
+					   	while(rs.next()){
+					   		cb.addElement(rs.getString("nome_equipa"));
+				 
+					   	}		
+					   	
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}
+					
+					//Carrega os dados para as comboBox (Administrator-Marcador-Equipa)
+					try{
+						
+				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) marcador_Equipa.getModel();				  
+				   		cb.removeAllElements();
+						
+						Statement st = conn.createStatement();
+						ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+						
+					   	while(rs.next()){
+					   		cb.addElement(rs.getString("nome_equipa"));
+				 
+					   	}		
+					   	
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}
+					
+					//Carrega o Plantel da equipa Sporting (inicial) (Administrator-Marcador-Plantel)
+					try{
+						
+				   		DefaultComboBoxModel cb = (DefaultComboBoxModel) marcador_Jogador.getModel();				  
+				   		cb.removeAllElements();
+						
+						Statement st = conn.createStatement();
+						ResultSet rs = st.executeQuery("SELECT DISTINCT Jogador.nome_jogador FROM Plantel JOIN Jogador ON Plantel.id_jogador = Jogador.id_jogador WHERE Jogador.equipa = 'Sporting' ");
+						
+					   	while(rs.next()){
+					   		cb.addElement(rs.getString("nome_jogador"));
+				 
+					   	}		
+					   	
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}
+					
 				}else{
 					JOptionPane.showMessageDialog(null, "Dados incorretos!");
 				}
@@ -392,7 +508,6 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				login.setVisible(false);
 				menu2.setVisible(true);
-				//setBounds(100, 100, 500, 405);
 				
 				 //Ligação à base de dados.
 				Connection conn = null;
@@ -451,7 +566,7 @@ public class Login extends JFrame {
 					dm.fireTableDataChanged();
 					
 			        Statement stat = conn.createStatement();
-			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogador");
+			        ResultSet rs = stat.executeQuery("SELECT * FROM Jogador ORDER BY equipa DESC");
 			        
 			        int colunas = rs.getMetaData().getColumnCount();
 			        
@@ -552,6 +667,7 @@ public class Login extends JFrame {
 		panel_17.add(Rnd_ep);
 		Rnd_ep.setColumns(10);
 		
+		
 		Des_ep = new JTextField();
 		Des_ep.setBounds(101, 62, 145, 20);
 		panel_17.add(Des_ep);
@@ -570,7 +686,7 @@ public class Login extends JFrame {
 		JButton btnNewButton_1 = new JButton("Criar");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+	
 				Random r = new Random();
 				id_epoca = r.nextInt(999);
 				Rnd_ep.setText(String.valueOf(id_epoca));
@@ -599,31 +715,42 @@ public class Login extends JFrame {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				 //Ligação à base de dados.
-				Connection conn = null;
+				String Rnd_epoca = Rnd_ep.getText();
+				String Des_epoca = Des_ep.getText();
+				String Di_epoca = Di_ep.getText();
+				String Df_epoca = Df_ep.getText();
 				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
 				
-				//Inserir dados em Epoca
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("INSERT INTO Epoca VALUES ("+ id_epoca +", '"+ Des_ep.getText() +"', '"+ Di_ep.getText() +"', '"+ Df_ep.getText() +"')");
-					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+				if( Rnd_epoca.isEmpty() || Des_epoca.isEmpty() || Di_epoca.isEmpty() || Df_epoca.isEmpty()){
+					JOptionPane.showMessageDialog(null, "É obrigatório preencher todos os campos.");
+				}else{
+				
+					 //Ligação à base de dados.
+					Connection conn = null;
 					
-					Rnd_ep.setText("");
-					Des_ep.setText("");
-					Di_ep.setText("");
-					Df_ep.setText("");
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
 					
-				} catch (SQLException e) {
-					e.printStackTrace();
+					//Insere dados na tabela Epoca da base de dados.
+					try {
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("INSERT INTO Epoca VALUES ("+ id_epoca +", '"+ Des_ep.getText() +"', '"+ Di_ep.getText() +"', '"+ Df_ep.getText() +"')");
+						JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+						
+						Rnd_ep.setText("");
+						Des_ep.setText("");
+						Di_ep.setText("");
+						Df_ep.setText("");
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -690,31 +817,36 @@ public class Login extends JFrame {
 		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					String item = (String) comboBox_editar_ep.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Epoca SET designacao='"+ textField_4.getText() +"' WHERE designacao='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_4.setText("");
-
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}				
-			
+				String desUpdateEpoca = textField_4.getText();
+				if(desUpdateEpoca.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Designação' para editar.");
+				}else{
+						
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo designação da tabela Epoca.
+					try {
+						String item = (String) comboBox_editar_ep.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Epoca SET designacao='"+ textField_4.getText() +"' WHERE designacao='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_4.setText("");
+	
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}				
+			}
 		});
 		
 		btnEditar.setBounds(280, 72, 78, 23);
@@ -724,28 +856,33 @@ public class Login extends JFrame {
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {			
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					String item = (String) comboBox_editar_ep.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Epoca SET data_inicio='"+ textField_5.getText() +"' WHERE designacao='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_5.setText("");
-
-				} catch (SQLException e) {
-					e.printStackTrace();
+				String diUpdateEpoca = textField_5.getText();
+				if(diUpdateEpoca.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Data de Inicio' para editar.");
+				}else{
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo data_inicio da tabela Epoca.
+					try {
+						String item = (String) comboBox_editar_ep.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Epoca SET data_inicio='"+ textField_5.getText() +"' WHERE designacao='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_5.setText("");
+	
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -757,6 +894,44 @@ public class Login extends JFrame {
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				String dfUpdateEpoca = textField_6.getText();
+				if(dfUpdateEpoca.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Data de Fim' para editar.");
+				}else{
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo data_fim da tabela Epoca.
+					try {
+						String item = (String) comboBox_editar_ep.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Epoca SET data_fim='"+ textField_6.getText() +"' WHERE designacao='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_6.setText("");
+	
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		button_4.setBounds(280, 171, 78, 23);
+		panel_18.add(button_4);
+		
+		JButton button_16 = new JButton("");
+		button_16.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
 				//Ligação à base de dados.
 				Connection conn = null;
 				
@@ -769,21 +944,30 @@ public class Login extends JFrame {
 					   e1.printStackTrace();
 				}
 				
-				//Inserir dados em Epoca
-				try {
-					String item = (String) comboBox_editar_ep.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Epoca SET data_fim='"+ textField_6.getText() +"' WHERE designacao='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_6.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				
+				//Carrega os dados (Designação da Epoca) da BD para a comboBox.
+				try{
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_editar_ep.getModel();
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("designacao"));				   				    
+					}
+				
+				}catch(SQLException se){
+					   se.printStackTrace();
 				}
 			}
 		});
-		button_4.setBounds(280, 171, 78, 23);
-		panel_18.add(button_4);
+		
+		button_16.setForeground(Color.CYAN);
+		button_16.setBackground(Color.WHITE);
+		button_16.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\imagens\\refresh.png"));
+		button_16.setBounds(254, 19, 27, 23);
+		panel_18.add(button_16);
 		
 		JPanel panel_19 = new JPanel();
 		panel_19.setBackground(Color.WHITE);
@@ -849,6 +1033,47 @@ public class Login extends JFrame {
 		comboBox_eliminar_ep.setBounds(117, 19, 145, 20);
 		panel_19.add(comboBox_eliminar_ep);
 		
+		JButton button_17 = new JButton("");
+		button_17.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				
+				//Carrega os dados (Designação da Epoca) da BD para a comboBox.
+				try{
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar_ep.getModel();
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Epoca");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("designacao"));				   				    
+					}
+				
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}
+			}
+		});
+		
+		button_17.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\imagens\\refresh.png"));
+		button_17.setForeground(Color.CYAN);
+		button_17.setBackground(Color.WHITE);
+		button_17.setBounds(272, 18, 27, 23);
+		panel_19.add(button_17);
+		
 		JLabel lblNewLabel_6 = new JLabel("");
 		lblNewLabel_6.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
 		lblNewLabel_6.setBounds(0, 0, 450, 274);
@@ -868,11 +1093,11 @@ public class Login extends JFrame {
 		tabbedPane_3.addTab("Adicionar", null, panel_14, null);
 		panel_14.setLayout(null);
 		
-		Rnd_Eq = new JTextField();
-		Rnd_Eq.setEditable(false);
-		Rnd_Eq.setColumns(10);
-		Rnd_Eq.setBounds(30, 25, 46, 20);
-		panel_14.add(Rnd_Eq);
+		Rnd_eq = new JTextField();
+		Rnd_eq.setEditable(false);
+		Rnd_eq.setColumns(10);
+		Rnd_eq.setBounds(30, 25, 46, 20);
+		panel_14.add(Rnd_eq);
 		
 		JButton Criar_rnd = new JButton("Criar");
 		Criar_rnd.addActionListener(new ActionListener() {
@@ -880,7 +1105,7 @@ public class Login extends JFrame {
 				
 				Random r = new Random();
 				id_equipa = r.nextInt(999);
-				Rnd_Eq.setText(String.valueOf(id_equipa));
+				Rnd_eq.setText(String.valueOf(id_equipa));
 			}
 		});
 		Criar_rnd.setBounds(120, 24, 145, 23);
@@ -924,41 +1149,53 @@ public class Login extends JFrame {
 		add_eq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 //Ligação à base de dados.
-				Connection conn = null;
+				String Rnd_equipa = Rnd_eq.getText();
+				String Nome_equipa = Nde_eq.getText();
+				String Nome_estadio = Ndes_eq.getText();
+				String Ddf_equipa = Ddf_eq.getText();
 				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
 				
-				//Inserir dados na tabela Equipa
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("INSERT INTO Equipa VALUES ("+ id_equipa +", '"+ Nde_eq.getText() +"', '"+ Ndes_eq.getText() +"', '"+ Ddf_eq.getText() +"')");
-					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");				
-					
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
+				if( Rnd_equipa.isEmpty() || Nome_equipa.isEmpty() || Nome_estadio.isEmpty() || Ddf_equipa.isEmpty()){
+					JOptionPane.showMessageDialog(null, "É obrigatório preencher todos os campos.");
+				}else{
+						
 				
-				//Criar dados na tabela Classificação para a equipa criada.				
-				try {
-					int idClass = 3 + (int)(Math.random()*999);
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("INSERT INTO Classificacao VALUES ("+ idClass +", '"+ Nde_eq.getText() +"', 0, 0, 0, 0)");
+					 //Ligação à base de dados.
+					Connection conn = null;
 					
-					Rnd_Eq.setText("");
-					Nde_eq.setText("");
-					Ndes_eq.setText("");
-					Ddf_eq.setText("");
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
 					
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+					//Insere dados na tabela Equipa da base de dados.
+					try {
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("INSERT INTO Equipa VALUES ("+ id_equipa +", '"+ Nde_eq.getText() +"', '"+ Ndes_eq.getText() +"', '"+ Ddf_eq.getText() +"')");
+						JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");				
+						
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					
+					//É criada uma linha para a tabela Classificacao com tudo a zeros, para a equipa criada.				
+					try {
+						int idClass = 3 + (int)(Math.random()*999);
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("INSERT INTO Classificacao VALUES ("+ idClass +", '"+ Nde_eq.getText() +"', 0, 0, 0, 0)");
+						
+						Rnd_eq.setText("");
+						Nde_eq.setText("");
+						Ndes_eq.setText("");
+						Ddf_eq.setText("");
+						
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -1023,31 +1260,37 @@ public class Login extends JFrame {
 		button_7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					String item = (String) comboBox_editar_eq.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Equipa SET nome_equipa='"+ textField_7.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_7.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				String ndeUpdateEquipa = textField_7.getText();
+				if(ndeUpdateEquipa.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Nome de Equipa' para editar.");
+				}else{
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo nome_equipa da tabela Equipa.
+					try {
+						String item = (String) comboBox_editar_eq.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Equipa SET nome_equipa='"+ textField_7.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_7.setText("");
+	
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
+		
 		button_7.setBounds(280, 72, 78, 23);
 		panel_15.add(button_7);
 		
@@ -1066,30 +1309,37 @@ public class Login extends JFrame {
 		button_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
+				String ndesUpdateEquipa = textField_8.getText();
+				if(ndesUpdateEquipa.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Nome do Estádio' para editar.");
+				}else{
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo nome_estadio da tabela Equipa.
+					try {
+						String item = (String) comboBox_editar_eq.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Equipa SET nome_estadio='"+ textField_8.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_8.setText("");
+	
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}	
 				}
-				
-				try {
-					String item = (String) comboBox_editar_eq.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Equipa SET nome_estadio='"+ textField_8.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_8.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}	
 			}
 		});
+		
 		button_8.setBounds(280, 119, 78, 23);
 		panel_15.add(button_8);
 		
@@ -1097,29 +1347,34 @@ public class Login extends JFrame {
 		button_9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
+				String desUpdateEpoca = textField_9.getText();
+				if(desUpdateEpoca.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Data de Fundação' para editar.");
+				}else{
+					//Ligação à base de dados.
+					Connection conn = null;
+					
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
+					
+					//Edita o campo data_fundacao da tabela Equipa.
+					try {
+						String item = (String) comboBox_editar_eq.getSelectedItem();
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("UPDATE Equipa SET data_fundacao='"+ textField_9.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
+						JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+						textField_9.setText("");
+	
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}	
 				}
-				
-				//Inserir dados em Epoca
-				try {
-					String item = (String) comboBox_editar_eq.getSelectedItem();
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Equipa SET data_fundacao='"+ textField_9.getText() +"' WHERE nome_equipa='"+ item.toString() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_9.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}	
 			}
 		});
 		button_9.setBounds(280, 171, 78, 23);
@@ -1135,6 +1390,47 @@ public class Login extends JFrame {
 		lblDataDeFundao_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDataDeFundao_1.setBounds(14, 174, 104, 14);
 		panel_15.add(lblDataDeFundao_1);
+		
+		JButton button_18 = new JButton("");
+		button_18.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				
+				//Carrega os dados (Designação da Epoca) da BD para a comboBox.
+				try{
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_editar_eq.getModel();
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("nome_equipa"));				   				    
+					}
+				
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}
+			}
+		});
+		
+		button_18.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\imagens\\refresh.png"));
+		button_18.setForeground(Color.CYAN);
+		button_18.setBackground(Color.WHITE);
+		button_18.setBounds(280, 19, 27, 23);
+		panel_15.add(button_18);
 		
 		JPanel panel_16 = new JPanel();
 		panel_16.setBackground(Color.WHITE);
@@ -1205,6 +1501,47 @@ public class Login extends JFrame {
 		button_5.setBounds(-13, 170, 450, 35);
 		panel_16.add(button_5);
 		
+		JButton button_19 = new JButton("");
+		button_19.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				
+				//Carrega os dados (Designação da Epoca) da BD para a comboBox.
+				try{
+					DefaultComboBoxModel cb = (DefaultComboBoxModel) comboBox_eliminar_eq.getModel();
+					cb.removeAllElements();
+					
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM Equipa");
+					
+					while(rs.next()){
+						cb.addElement(rs.getString("nome_equipa"));				   				    
+					}
+				
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}
+			}
+		});
+		
+		button_19.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\imagens\\refresh.png"));
+		button_19.setForeground(Color.CYAN);
+		button_19.setBackground(Color.WHITE);
+		button_19.setBounds(272, 18, 27, 23);
+		panel_16.add(button_19);
+		
 		JLabel lblNewLabel_7 = new JLabel("");
 		lblNewLabel_7.setBackground(new Color(0, 0, 0));
 		lblNewLabel_7.setForeground(new Color(0, 0, 0));
@@ -1229,13 +1566,13 @@ public class Login extends JFrame {
 		JTextField Rnd_jgd = new JTextField();
 		Rnd_jgd.setEditable(false);
 		Rnd_jgd.setColumns(10);
-		Rnd_jgd.setBounds(30, 25, 46, 20);
+		Rnd_jgd.setBounds(30, 20, 46, 20);
 		panel_20.add(Rnd_jgd);
 		
 		JLabel label_3 = new JLabel("ID");
 		label_3.setForeground(Color.BLACK);
 		label_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		label_3.setBounds(10, 30, 46, 14);
+		label_3.setBounds(10, 25, 46, 14);
 		panel_20.add(label_3);
 		
 		JButton Btn_rnd_jgd = new JButton("Criar");
@@ -1247,94 +1584,117 @@ public class Login extends JFrame {
 				Rnd_jgd.setText(String.valueOf(id_jogador));
 			}
 		});
-		Btn_rnd_jgd.setBounds(130, 24, 145, 23);
+		Btn_rnd_jgd.setBounds(130, 19, 145, 23);
 		panel_20.add(Btn_rnd_jgd);
 		
 		JLabel lblNomeDoJogador = new JLabel("Nome do Jogador");
 		lblNomeDoJogador.setForeground(Color.BLACK);
 		lblNomeDoJogador.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNomeDoJogador.setBounds(10, 62, 100, 14);
+		lblNomeDoJogador.setBounds(10, 52, 100, 14);
 		panel_20.add(lblNomeDoJogador);
 		
 		Ndj_jgd = new JTextField();
 		Ndj_jgd.setColumns(10);
-		Ndj_jgd.setBounds(130, 62, 145, 20);
+		Ndj_jgd.setBounds(130, 52, 145, 20);
 		panel_20.add(Ndj_jgd);
 		
 		JLabel lblExcristiano = new JLabel("( Ex: \"Cristiano Ronaldo\" )");
 		lblExcristiano.setForeground(Color.BLACK);
-		lblExcristiano.setBounds(280, 65, 135, 14);
+		lblExcristiano.setBounds(280, 55, 135, 14);
 		panel_20.add(lblExcristiano);
 		
 		JLabel lblDataDeNascimento = new JLabel("Data de Nascimento");
 		lblDataDeNascimento.setForeground(Color.BLACK);
 		lblDataDeNascimento.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblDataDeNascimento.setBounds(10, 96, 113, 14);
+		lblDataDeNascimento.setBounds(10, 110, 113, 14);
 		panel_20.add(lblDataDeNascimento);
 		
 		Ddn_jgd = new JTextField();
 		Ddn_jgd.setColumns(10);
-		Ddn_jgd.setBounds(130, 96, 145, 20);
+		Ddn_jgd.setBounds(130, 108, 145, 20);
 		panel_20.add(Ddn_jgd);
 		
 		JLabel lblExDdmmaa_1 = new JLabel("( Ex: dd-mm-aa )");
 		lblExDdmmaa_1.setForeground(Color.BLACK);
-		lblExDdmmaa_1.setBounds(280, 97, 135, 14);
+		lblExDdmmaa_1.setBounds(280, 111, 135, 14);
 		panel_20.add(lblExDdmmaa_1);
 		
 		JLabel lblPosioDeJogo = new JLabel("Posi\u00E7\u00E3o de Jogo");
 		lblPosioDeJogo.setForeground(Color.BLACK);
 		lblPosioDeJogo.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblPosioDeJogo.setBounds(10, 130, 100, 14);
+		lblPosioDeJogo.setBounds(10, 138, 100, 14);
 		panel_20.add(lblPosioDeJogo);
 		
 		Pdj_jgd = new JTextField();
 		Pdj_jgd.setColumns(10);
-		Pdj_jgd.setBounds(130, 130, 145, 20);
+		Pdj_jgd.setBounds(130, 136, 145, 20);
 		panel_20.add(Pdj_jgd);
 		
 		JLabel lblExdf = new JLabel("( Ex: \"DF\",\"MD\",\"AV\",\"GR\" )");
 		lblExdf.setForeground(Color.BLACK);
-		lblExdf.setBounds(280, 131, 135, 14);
+		lblExdf.setBounds(280, 139, 135, 14);
 		panel_20.add(lblExdf);
 		
 		JButton Add_jgd = new JButton("Adicionar");
 		Add_jgd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				 //Ligação à base de dados.
-				Connection conn = null;
+				String Rnd_jogador = Rnd_jgd.getText();
+				String nome_Jogador = Ndj_jgd.getText();
+				String data_Nascimento = Ddn_jgd.getText();
+				String posicao_Jogo = Pdj_jgd.getText();
 				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
 				
-				//Inserir dados em Epoca
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("INSERT INTO Jogador VALUES ("+ id_jogador +", '"+ Ndj_jgd.getText() +"', '"+ Ddn_jgd.getText() +"', '"+ Pdj_jgd.getText() +"')");
-					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+				if( Rnd_jogador.isEmpty() || nome_Jogador.isEmpty() || data_Nascimento.isEmpty() || posicao_Jogo.isEmpty()){
+					JOptionPane.showMessageDialog(null, "É obrigatório preencher todos os campos.");
+				}else{
+					 //Ligação à base de dados.
+					Connection conn = null;
 					
-					Rnd_jgd.setText("");
-					Ndj_jgd.setText("");
-					Ddn_jgd.setText("");
-					Pdj_jgd.setText("");
+					try{
+						   Class.forName(JDBC_DRIVER); 
+						   conn = DriverManager.getConnection(DB_URL);
+					}catch(SQLException se){
+						   se.printStackTrace();
+					}catch(Exception e1){
+						   e1.printStackTrace();
+					}
 					
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+					//Insere dados nos campos da tabela Jogador da base de dados.
+					try {
+						String equipa = (String) Eq_jgd.getSelectedItem();
+						System.out.println(equipa.toString());
+						Statement stat = conn.createStatement();
+						stat.executeUpdate("INSERT INTO Jogador VALUES ("+ id_jogador +", '"+ Ndj_jgd.getText() +"','"+ equipa.toString() +"', '"+ Ddn_jgd.getText() +"', '"+ Pdj_jgd.getText() +"')");
+						JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+						
+						Rnd_jgd.setText("");
+						Ndj_jgd.setText("");
+						Ddn_jgd.setText("");
+						Pdj_jgd.setText("");
+						
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
+		
 		});
 		
 		Add_jgd.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		Add_jgd.setBackground(Color.WHITE);
-		Add_jgd.setBounds(-13, 170, 451, 35);
+		Add_jgd.setBounds(-13, 180, 451, 35);
 		panel_20.add(Add_jgd);
+		
+		JLabel lblEquipa_1 = new JLabel("Equipa");
+		lblEquipa_1.setForeground(Color.BLACK);
+		lblEquipa_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblEquipa_1.setBounds(10, 80, 100, 14);
+		panel_20.add(lblEquipa_1);
+		
+		Eq_jgd = new JComboBox();
+		Eq_jgd.setBounds(130, 80, 145, 20);
+		panel_20.add(Eq_jgd);
 		
 		JPanel panel_21 = new JPanel();
 		panel_21.setBackground(Color.WHITE);
@@ -1366,27 +1726,38 @@ public class Login extends JFrame {
 		button_11.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Jogador SET nome_jogador='"+ textField_10.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_10.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				String ndjEditarJogador = Ndj_editar_jgd.getText();
+				if(ndjEditarJogador.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Insira o nome do jogador que deseja editar.");
+				}else{
+					String ndjUpdateJogador = textField_10.getText();
+					if(ndjUpdateJogador.isEmpty()){
+						JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Nome de Jogador' para editar.");
+					}else{
+					
+							//Ligação à base de dados.
+							Connection conn = null;
+							
+							try{
+								   Class.forName(JDBC_DRIVER); 
+								   conn = DriverManager.getConnection(DB_URL);
+							}catch(SQLException se){
+								   se.printStackTrace();
+							}catch(Exception e1){
+								   e1.printStackTrace();
+							}
+							
+							//Edita o campo nome_jogador da tabela Jogador.
+							try {
+								Statement stat = conn.createStatement();
+								stat.executeUpdate("UPDATE Jogador SET nome_jogador='"+ textField_10.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
+								JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+								textField_10.setText("");
+			
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+					}
 				}
 			}
 		});
@@ -1398,59 +1769,79 @@ public class Login extends JFrame {
 		button_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Jogador SET data_nascimento='"+ textField_11.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_11.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+					String ndjEditarJogador = Ndj_editar_jgd.getText();
+					if(ndjEditarJogador.isEmpty()){
+						JOptionPane.showMessageDialog(null, "Insira o nome do jogador que deseja editar.");
+					}else{
+						String ddnUpdateJogador = textField_11.getText();
+						if(ddnUpdateJogador.isEmpty()){
+							JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Data de Nascimento' para editar.");
+						}else{
+							//Ligação à base de dados.
+							Connection conn = null;
+							
+							try{
+								   Class.forName(JDBC_DRIVER); 
+								   conn = DriverManager.getConnection(DB_URL);
+							}catch(SQLException se){
+								   se.printStackTrace();
+							}catch(Exception e1){
+								   e1.printStackTrace();
+							}
+							
+							//Edita o campo data_nascimento da tabela Jogador.
+							try {
+								Statement stat = conn.createStatement();
+								stat.executeUpdate("UPDATE Jogador SET data_nascimento='"+ textField_11.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
+								JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+								textField_11.setText("");
+			
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+					}
 				}
 			}
 		});
 		
-		button_12.setBounds(300, 119, 78, 23);
+		button_12.setBounds(300, 137, 78, 23);
 		panel_21.add(button_12);
 		
 		JButton button_13 = new JButton("Editar");
 		button_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//Ligação à base de dados.
-				Connection conn = null;
-				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
-				
-				//Inserir dados em Epoca
-				try {
-					Statement stat = conn.createStatement();
-					stat.executeUpdate("UPDATE Jogador SET posicao='"+ textField_12.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
-					JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
-					textField_12.setText("");
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				String ndjEditarJogador = Ndj_editar_jgd.getText();
+				if(ndjEditarJogador.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Insira o nome do jogador que deseja editar.");
+				}else{
+					String pdjUpdateJogador = textField_12.getText();
+					if(pdjUpdateJogador.isEmpty()){
+						JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Posição de Jogador' para editar.");
+					}else{
+						//Ligação à base de dados.
+						Connection conn = null;
+						
+						try{
+							   Class.forName(JDBC_DRIVER); 
+							   conn = DriverManager.getConnection(DB_URL);
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}catch(Exception e1){
+							   e1.printStackTrace();
+						}
+						
+						//Edita o campo posicao da tabela Jogador.
+						try {
+							Statement stat = conn.createStatement();
+							stat.executeUpdate("UPDATE Jogador SET posicao='"+ textField_12.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
+							JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+							textField_12.setText("");
+		
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
 				}
 			}
 		});
@@ -1460,12 +1851,12 @@ public class Login extends JFrame {
 		
 		textField_12 = new JTextField();
 		textField_12.setColumns(10);
-		textField_12.setBounds(140, 172, 145, 20);
+		textField_12.setBounds(140, 137, 145, 20);
 		panel_21.add(textField_12);
 		
 		textField_11 = new JTextField();
 		textField_11.setColumns(10);
-		textField_11.setBounds(140, 120, 145, 20);
+		textField_11.setBounds(140, 172, 145, 20);
 		panel_21.add(textField_11);
 		
 		JLabel lblPosioDeJogo_1 = new JLabel("Posi\u00E7\u00E3o de Jogo");
@@ -1477,7 +1868,7 @@ public class Login extends JFrame {
 		JLabel lblDataDeNascimento_1 = new JLabel("Data de Nascimento");
 		lblDataDeNascimento_1.setForeground(Color.BLACK);
 		lblDataDeNascimento_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblDataDeNascimento_1.setBounds(14, 122, 116, 14);
+		lblDataDeNascimento_1.setBounds(14, 143, 116, 14);
 		panel_21.add(lblDataDeNascimento_1);
 		
 		Ndj_editar_jgd = new JTextField();
@@ -1485,16 +1876,69 @@ public class Login extends JFrame {
 		Ndj_editar_jgd.setBounds(140, 20, 145, 20);
 		panel_21.add(Ndj_editar_jgd);
 		
+		JLabel lblEquipa_2 = new JLabel("Equipa");
+		lblEquipa_2.setForeground(Color.BLACK);
+		lblEquipa_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblEquipa_2.setBounds(14, 110, 116, 14);
+		panel_21.add(lblEquipa_2);
+		
+		JButton button_15 = new JButton("Editar");
+		button_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String ndjEditarJogador = Ndj_editar_jgd.getText();
+				if(ndjEditarJogador.isEmpty()){
+					JOptionPane.showMessageDialog(null, "Insira o nome do jogador que deseja editar.");
+				}else{
+							String equipaUpdateJogador = textField_e.getText();
+							if(equipaUpdateJogador.isEmpty()){
+								JOptionPane.showMessageDialog(null, "Não inseriu nada em 'Equipa' para editar.");
+							}else{
+						//Ligação à base de dados.
+						Connection conn = null;
+						
+						try{
+							   Class.forName(JDBC_DRIVER); 
+							   conn = DriverManager.getConnection(DB_URL);
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}catch(Exception e1){
+							   e1.printStackTrace();
+						}
+						
+						//Edita o campo equipa da tabela Jogador.
+						try {
+							Statement stat = conn.createStatement();
+							stat.executeUpdate("UPDATE Jogador SET equipa='"+ textField_e.getText() +"' WHERE nome_jogador='"+ Ndj_editar_jgd.getText() +"'");
+							JOptionPane.showMessageDialog(null, "Dados editados com sucesso!");					
+							textField_e.setText("");
+		
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}			
+				}
+			}
+		});
+		
+		button_15.setBounds(300, 104, 78, 23);
+		panel_21.add(button_15);
+		
+		textField_e = new JTextField();
+		textField_e.setBounds(140, 104, 145, 20);
+		panel_21.add(textField_e);
+		textField_e.setColumns(10);
+		
 		JPanel panel_22 = new JPanel();
 		panel_22.setBackground(Color.WHITE);
 		tabbedPane_4.addTab("Eliminar", null, panel_22, null);
 		panel_22.setLayout(null);
 		
-		JLabel label_4 = new JLabel("Equipa a eliminar");
-		label_4.setForeground(Color.BLACK);
-		label_4.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		label_4.setBounds(10, 21, 97, 14);
-		panel_22.add(label_4);
+		JLabel lblJogadorAEliminar = new JLabel("Jogador a eliminar");
+		lblJogadorAEliminar.setForeground(Color.BLACK);
+		lblJogadorAEliminar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblJogadorAEliminar.setBounds(10, 21, 97, 14);
+		panel_22.add(lblJogadorAEliminar);
 		
 		JButton button_14 = new JButton("Eliminar");
 		button_14.addActionListener(new ActionListener() {
@@ -1643,61 +2087,136 @@ public class Login extends JFrame {
 		button_10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 //Ligação à base de dados.
-				Connection conn = null;
+				String Rnd_jogo = Rnd_jg.getText();
+				String Ddj_jogo = Ddj_jg.getText();
 				
-				try{
-					   Class.forName(JDBC_DRIVER); 
-					   conn = DriverManager.getConnection(DB_URL);
-				}catch(SQLException se){
-					   se.printStackTrace();
-				}catch(Exception e1){
-					   e1.printStackTrace();
-				}
+				if(empate == 0){
+					String vitoria_Jogo = vitoria_jg.getText();
+					String derrota_Jogo = derrota_jg.getText();
 				
-				//Inserir dados na tabela Jogo e Atualização da tabela Classificativa.
-				try {
-					String Edc_jg = (String) comboBox_add_ec.getSelectedItem();
-					String Ev_jg = (String) comboBox_add_v.getSelectedItem();		
-					
-					Statement stat = conn.createStatement();
-					Statement stat2 = conn.createStatement();
-					Statement stat3 = conn.createStatement();
-					Statement stat4 = conn.createStatement();
-					Statement stat5 = conn.createStatement();
-					Statement stat6 = conn.createStatement();
-					Statement stat7 = conn.createStatement();
-					Statement stat8 = conn.createStatement();
-					Statement stat9 = conn.createStatement();
-					Statement stat10 = conn.createStatement();
-					Statement stat11 = conn.createStatement();
-					
-					stat.executeUpdate("INSERT INTO Jogo VALUES ("+ id_jogo +", '"+ Edc_jg.toString() +"', '"+ Ev_jg.toString() +"', '"+ Ddj_jg.getText() +"',"+ golos_c.getSelectedIndex() +","+ golos_v.getSelectedIndex() +",'"+ vitoria_jg.getText() +"',"+empate+",'"+ derrota_jg.getText() +"')");					
-					stat2.executeUpdate("UPDATE Classificacao SET pontos=pontos+3 WHERE equipa='"+vitoria_jg.getText()+"'");
-					stat3.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+1 WHERE equipa='"+vitoria_jg.getText()+"'");
-					stat4.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+0 WHERE equipa='"+vitoria_jg.getText()+"'");
-					stat5.executeUpdate("UPDATE Classificacao SET pontos=pontos+0 WHERE equipa='"+derrota_jg.getText()+"'");
-					stat6.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+0 WHERE equipa='"+derrota_jg.getText()+"'");
-					stat7.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+1 WHERE equipa='"+derrota_jg.getText()+"'");
-					
-					//Caso haja empate atualizar dados
-					if(empate == 1){	
-						stat8.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Edc_jg.toString()+"'");
-						stat9.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Ev_jg.toString()+"'");
-						stat10.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Edc_jg.toString()+"'");
-						stat11.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Ev_jg.toString()+"'");				
+					if( Rnd_jogo.isEmpty() || Ddj_jogo.isEmpty() || vitoria_Jogo.isEmpty() || derrota_Jogo.isEmpty()){
+						JOptionPane.showMessageDialog(null, "É obrigatório preencher todos os campos.");
+					}else{
+						
+						 //Ligação à base de dados.
+						Connection conn = null;
+						
+						try{
+							   Class.forName(JDBC_DRIVER); 
+							   conn = DriverManager.getConnection(DB_URL);
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}catch(Exception e1){
+							   e1.printStackTrace();
+						}
+						
+						//Insere dados na tabela Jogo da base de dados e atualiza a tabela Classificativa.
+						try {
+							String Edc_jg = (String) comboBox_add_ec.getSelectedItem();
+							String Ev_jg = (String) comboBox_add_v.getSelectedItem();		
+							
+							Statement stat = conn.createStatement();
+							Statement stat2 = conn.createStatement();
+							Statement stat3 = conn.createStatement();
+							Statement stat4 = conn.createStatement();
+							Statement stat5 = conn.createStatement();
+							Statement stat6 = conn.createStatement();
+							Statement stat7 = conn.createStatement();
+							Statement stat8 = conn.createStatement();
+							Statement stat9 = conn.createStatement();
+							Statement stat10 = conn.createStatement();
+							Statement stat11 = conn.createStatement();
+							
+							stat.executeUpdate("INSERT INTO Jogo VALUES ("+ id_jogo +", '"+ Edc_jg.toString() +"', '"+ Ev_jg.toString() +"', '"+ Ddj_jg.getText() +"',"+ golos_c.getSelectedIndex() +","+ golos_v.getSelectedIndex() +",'"+ vitoria_jg.getText() +"',"+empate+",'"+ derrota_jg.getText() +"')");					
+							stat2.executeUpdate("UPDATE Classificacao SET pontos=pontos+3 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat3.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+1 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat4.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+0 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat5.executeUpdate("UPDATE Classificacao SET pontos=pontos+0 WHERE equipa='"+derrota_jg.getText()+"'");
+							stat6.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+0 WHERE equipa='"+derrota_jg.getText()+"'");
+							stat7.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+1 WHERE equipa='"+derrota_jg.getText()+"'");
+							
+							//Caso haja empate atualizar dados
+							if(empate == 1){	
+								stat8.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Edc_jg.toString()+"'");
+								stat9.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Ev_jg.toString()+"'");
+								stat10.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Edc_jg.toString()+"'");
+								stat11.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Ev_jg.toString()+"'");				
+							}
+							
+							JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+							
+							Rnd_jg.setText("");
+							Ddj_jg.setText("");
+							vitoria_jg.setText("");
+							derrota_jg.setText("");
+		
+							
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
 					}
-					
-					JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
-					
-					Rnd_jg.setText("");
-					Ddj_jg.setText("");
-					vitoria_jg.setText("");
-					derrota_jg.setText("");
-
-					
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				}else{
+					if( Rnd_jogo.isEmpty() || Ddj_jogo.isEmpty()){
+						JOptionPane.showMessageDialog(null, "É obrigatório preencher todos os campos.");
+					}else{
+						
+						 //Ligação à base de dados.
+						Connection conn = null;
+						
+						try{
+							   Class.forName(JDBC_DRIVER); 
+							   conn = DriverManager.getConnection(DB_URL);
+						}catch(SQLException se){
+							   se.printStackTrace();
+						}catch(Exception e1){
+							   e1.printStackTrace();
+						}
+						
+						//Inserir dados na tabela Jogo e Atualização da tabela Classificativa.
+						try {
+							String Edc_jg = (String) comboBox_add_ec.getSelectedItem();
+							String Ev_jg = (String) comboBox_add_v.getSelectedItem();		
+							
+							Statement stat = conn.createStatement();
+							Statement stat2 = conn.createStatement();
+							Statement stat3 = conn.createStatement();
+							Statement stat4 = conn.createStatement();
+							Statement stat5 = conn.createStatement();
+							Statement stat6 = conn.createStatement();
+							Statement stat7 = conn.createStatement();
+							Statement stat8 = conn.createStatement();
+							Statement stat9 = conn.createStatement();
+							Statement stat10 = conn.createStatement();
+							Statement stat11 = conn.createStatement();
+							
+							stat.executeUpdate("INSERT INTO Jogo VALUES ("+ id_jogo +", '"+ Edc_jg.toString() +"', '"+ Ev_jg.toString() +"', '"+ Ddj_jg.getText() +"',"+ golos_c.getSelectedIndex() +","+ golos_v.getSelectedIndex() +",'"+ vitoria_jg.getText() +"',"+empate+",'"+ derrota_jg.getText() +"')");					
+							stat2.executeUpdate("UPDATE Classificacao SET pontos=pontos+3 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat3.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+1 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat4.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+0 WHERE equipa='"+vitoria_jg.getText()+"'");
+							stat5.executeUpdate("UPDATE Classificacao SET pontos=pontos+0 WHERE equipa='"+derrota_jg.getText()+"'");
+							stat6.executeUpdate("UPDATE Classificacao SET vitorias=vitorias+0 WHERE equipa='"+derrota_jg.getText()+"'");
+							stat7.executeUpdate("UPDATE Classificacao SET derrotas=derrotas+1 WHERE equipa='"+derrota_jg.getText()+"'");
+							
+							//Caso haja empate atualizar dados
+							if(empate == 1){	
+								stat8.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Edc_jg.toString()+"'");
+								stat9.executeUpdate("UPDATE Classificacao SET pontos=pontos+1 WHERE equipa='"+Ev_jg.toString()+"'");
+								stat10.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Edc_jg.toString()+"'");
+								stat11.executeUpdate("UPDATE Classificacao SET empates=empates+1 WHERE equipa='"+Ev_jg.toString()+"'");				
+							}
+							
+							JOptionPane.showMessageDialog(null, "Dados adicionados com sucesso!");
+							
+							Rnd_jg.setText("");
+							Ddj_jg.setText("");
+							vitoria_jg.setText("");
+							derrota_jg.setText("");
+		
+							
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
 				}
 			}
 		});
@@ -1719,7 +2238,7 @@ public class Login extends JFrame {
 		lblDerrota.setBounds(158, 150, 100, 14);
 		panel_23.add(lblDerrota);
 		
-		JCheckBox chck_empate = new JCheckBox("Empate");
+		chck_empate = new JCheckBox("Empate");
 		chck_empate.setBackground(new Color(0, 0, 0));
 		chck_empate.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		chck_empate.setForeground(new Color(240, 230, 140));
@@ -1824,6 +2343,87 @@ public class Login extends JFrame {
 		lblNewLabel_9.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\img\\bg6.jpg"));
 		lblNewLabel_9.setBounds(0, 0, 450, 274);
 		panel_12.add(lblNewLabel_9);
+		
+		JPanel panel_13 = new JPanel();
+		panel_13.setBackground(Color.WHITE);
+		tabbedPane_1.addTab("Marcadores", null, panel_13, null);
+		panel_13.setLayout(null);
+		
+		JTabbedPane tabbedPane_6 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane_6.setBounds(10, 11, 429, 252);
+		panel_13.add(tabbedPane_6);
+		
+		JPanel panel_24 = new JPanel();
+		panel_24.setBackground(Color.WHITE);
+		tabbedPane_6.addTab("Adicionar", null, panel_24, null);
+		panel_24.setLayout(null);
+		
+		marcador_Equipa = new JComboBox();
+		marcador_Equipa.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				
+				//Ligação à base de dados.
+				Connection conn = null;
+				
+				try{
+					   Class.forName(JDBC_DRIVER); 
+					   conn = DriverManager.getConnection(DB_URL);
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}catch(Exception e1){
+					   e1.printStackTrace();
+				}
+				
+				//Carrega o Plantel da equipa que é escolhida na combobox da Equipa.
+				try{
+					
+			   		DefaultComboBoxModel cb = (DefaultComboBoxModel) marcador_Jogador.getModel();				  
+			   		cb.removeAllElements();
+					
+			   		String equipa = (String) marcador_Equipa.getSelectedItem();
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery("SELECT DISTINCT Jogador.nome_jogador FROM Plantel JOIN Jogador ON Plantel.id_jogador = Jogador.id_jogador WHERE Jogador.equipa = '"+equipa+"' ");
+				   	while(rs.next()){
+				   		cb.addElement(rs.getString("nome_jogador"));
+			 
+				   	}		
+				   	
+				}catch(SQLException se){
+					   se.printStackTrace();
+				}
+				
+			}
+		});
+		
+		marcador_Equipa.setBounds(138, 37, 112, 20);
+		panel_24.add(marcador_Equipa);
+		
+		marcador_Jogador = new JComboBox();
+		marcador_Jogador.setBounds(138, 88, 112, 20);
+		panel_24.add(marcador_Jogador);
+		
+		JLabel lblEquipa_3 = new JLabel("Equipa");
+		lblEquipa_3.setBounds(20, 40, 108, 14);
+		panel_24.add(lblEquipa_3);
+		
+		JLabel lblNomeDoJogador_2 = new JLabel("Nome do jogador");
+		lblNomeDoJogador_2.setBounds(20, 91, 108, 14);
+		panel_24.add(lblNomeDoJogador_2);
+		
+		JPanel panel_27 = new JPanel();
+		panel_27.setBackground(Color.WHITE);
+		tabbedPane_6.addTab("Editar", null, panel_27, null);
+		panel_27.setLayout(null);
+		
+		JPanel panel_28 = new JPanel();
+		panel_28.setBackground(Color.WHITE);
+		tabbedPane_6.addTab("Eliminar", null, panel_28, null);
+		panel_28.setLayout(null);
+		
+		JLabel lblNewLabel_10 = new JLabel("");
+		lblNewLabel_10.setIcon(new ImageIcon("C:\\Users\\Andrei\\Desktop\\TP\\Trabalho_Pratico_CP\\imagens\\bg6.jpg"));
+		lblNewLabel_10.setBounds(0, 0, 450, 274);
+		panel_13.add(lblNewLabel_10);
 		
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(17, 33, 458, 14);
@@ -2002,7 +2602,7 @@ public class Login extends JFrame {
 						   e1.printStackTrace();
 					}
 					
-					//Carrega todos os dados para a Table2.
+					//Carrega todos os dados para a Table1.
 				    try
 				    {
 						DefaultTableModel dm = (DefaultTableModel)table.getModel();
@@ -2255,7 +2855,7 @@ public class Login extends JFrame {
 					   e1.printStackTrace();
 				}
 				
-				//Carrega todos os dados para a Table3.
+				//Carrega todos os campos da tabela Jogador, consoante o que for inserido na caixa de texto "Txt"
 			    try
 			    {
 					DefaultTableModel dm = (DefaultTableModel)table3.getModel();
@@ -2301,23 +2901,24 @@ public class Login extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"C\u00F3d", "Nome do Jogador", "Data de Nascimento", "Posi\u00E7\u00E3o de Jogo"
+				"C\u00F3d", "Nome do Jogador", "Equipa", "Data de N.", "Pos"
 			}
-		));
-		
-		
-		table3.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-		table3.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-		table3.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-		table3.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+		) {
+			boolean[] columnEditables = new boolean[] {
+				true, true, true, true, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
 		table3.getColumnModel().getColumn(0).setResizable(false);
-		table3.getColumnModel().getColumn(1).setResizable(false);
-		table3.getColumnModel().getColumn(2).setResizable(false);
-		table3.getColumnModel().getColumn(3).setResizable(false);
 		table3.getColumnModel().getColumn(0).setPreferredWidth(40);
-		table3.getColumnModel().getColumn(1).setPreferredWidth(286);
-		table3.getColumnModel().getColumn(2).setPreferredWidth(171);
-		table3.getColumnModel().getColumn(3).setPreferredWidth(194);
+		table3.getColumnModel().getColumn(1).setResizable(false);
+		table3.getColumnModel().getColumn(1).setPreferredWidth(200);
+		table3.getColumnModel().getColumn(2).setPreferredWidth(110);
+		table3.getColumnModel().getColumn(2).setMaxWidth(2147483645);
+		table3.getColumnModel().getColumn(3).setResizable(false);
+		table3.getColumnModel().getColumn(4).setPreferredWidth(47);
 		scrollPane_2.setViewportView(table3);
 		
 		JPanel panel_3 = new JPanel();
@@ -2343,7 +2944,7 @@ public class Login extends JFrame {
 						   e1.printStackTrace();
 					}
 					
-					//Carrega todos os dados para a Table4.
+					//Carrega todos os campos da tabela Jogo da bd para a Table4.
 				    try
 				    {
 						DefaultTableModel dm = (DefaultTableModel)table4.getModel();
@@ -2506,7 +3107,7 @@ public class Login extends JFrame {
 					   e1.printStackTrace();
 				}
 				
-				//Carrega todos os dados para a Table3.
+				//Carrega todos os campos da tabela Jogo começados pela data inserida na caixa de texto Txt.
 			    try
 			    {
 					DefaultTableModel dm = (DefaultTableModel)table4.getModel();
@@ -2601,7 +3202,7 @@ public class Login extends JFrame {
 					}catch(Exception e1){
 						   e1.printStackTrace();
 					}
-					//Carrega todos os dados para a Table5.
+					//Carrega todos os campos da tabela Classificacao da db para a Table5.
 				    try
 				    {
 						DefaultTableModel dm = (DefaultTableModel)table5.getModel();
@@ -2735,5 +3336,17 @@ public class Login extends JFrame {
 	}
 	protected JComboBox getComboBox_add_v() {
 		return comboBox_add_v;
+	}
+	protected JComboBox getEq_jgd() {
+		return Eq_jgd;
+	}
+	protected JCheckBox getChck_empate() {
+		return chck_empate;
+	}
+	protected JComboBox getMarcador_Equipa() {
+		return marcador_Equipa;
+	}
+	protected JComboBox getMarcar_Jogador() {
+		return marcador_Jogador;
 	}
 }
